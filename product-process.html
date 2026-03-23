@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finexio Product Process</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz@9..40&family=DM+Sans:opsz,wght@9..40,300&family=DM+Sans:opsz,wght@9..40,500&family=DM+Sans:opsz,wght@9..40,700&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --bg:#08090d;--card:#0e1117;--elevated:#141820;--hover:#1a1f2b;
+            --border:#1e2432;--border-s:#151a24;
+            --t1:#e2e8f0;--t2:#94a3b8;--t3:#475569;--t4:#334155;
+            --accent:#3b82f6;--accent-l:#60a5fa;--accent-s:rgba(59,130,246,0.08);--accent-b:rgba(59,130,246,0.15);
+        }
+        body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;-webkit-font-smoothing:antialiased}
+        .ctr{max-width:1080px;margin:0 auto;padding:0 40px}
+        a{color:var(--accent-l);text-decoration:none}a:hover{text-decoration:underline}
+
+        /* Header */
+        header{padding:24px 0;border-bottom:1px solid var(--border-s)}
+        header .inner{display:flex;justify-content:space-between;align-items:center}
+        header .brand{display:flex;align-items:center;gap:16px}
+        header .brand img{height:22px;opacity:0.7}
+        header .divider{width:1px;height:20px;background:var(--border)}
+        header h1{font-size:15px;font-weight:500;color:var(--t2);letter-spacing:0.02em}
+        .tag{font-size:10px;font-weight:500;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--accent-b);border-radius:4px}
+
+        /* Hero */
+        .hero{padding:72px 0 56px;border-bottom:1px solid var(--border-s)}
+        .hero-label{font-size:11px;font-weight:500;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:20px}
+        .hero h2{font-size:38px;font-weight:700;line-height:1.15;max-width:720px;margin-bottom:16px}
+        .hero .subtitle{font-size:16px;color:var(--t2);max-width:620px;line-height:1.7;margin-bottom:40px}
+
+        /* Stat bar */
+        .stats{display:flex;gap:48px;padding:28px 0;border-top:1px solid var(--border-s)}
+        .stat-num{font-size:42px;font-weight:300;color:var(--accent-l);line-height:1;font-variant-numeric:tabular-nums}
+        .stat-label{font-size:12px;color:var(--t3);margin-top:4px}
+
+        /* ─── Executive Summary ─── */
+        .exec{padding:56px 0;border-bottom:1px solid var(--border-s)}
+        .exec-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:40px}
+        .exec-card{background:var(--card);border:1px solid var(--border-s);border-radius:12px;padding:24px}
+        .exec-icon{margin-bottom:14px}
+        .exec-title{font-size:15px;font-weight:700;margin-bottom:6px}
+        .exec-desc{font-size:13px;color:var(--t2);line-height:1.6}
+
+        /* Visual Flow */
+        .flow-visual{
+            display:flex;align-items:center;gap:0;
+            background:var(--card);border:1px solid var(--border-s);border-radius:16px;
+            padding:32px;margin-bottom:12px;
+        }
+        .flow-node{flex:1;text-align:center;padding:16px;position:relative;cursor:pointer;border-radius:10px;transition:background 0.2s}
+        .flow-node:hover{background:var(--elevated)}
+        .flow-node-num{font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.06em;margin-bottom:6px}
+        .flow-node-name{font-size:17px;font-weight:700;margin-bottom:4px}
+        .flow-node-sub{font-size:12px;color:var(--t3);margin-bottom:8px}
+        .flow-node-out{font-size:11px;color:var(--accent-l);font-weight:500}
+        .flow-arrow{width:48px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .flow-arrow svg{width:32px;height:32px}
+
+        /* ─── Expandable Sections ─── */
+        .expand-section{border-bottom:1px solid var(--border-s)}
+        .expand-header{
+            padding:28px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+            transition:opacity 0.2s;
+        }
+        .expand-header:hover{opacity:0.85}
+        .expand-header h3{font-size:18px;font-weight:700}
+        .expand-header .hint{font-size:12px;color:var(--t3);margin-left:12px;font-weight:400}
+        .expand-chevron{
+            width:28px;height:28px;border-radius:6px;background:var(--accent-s);border:1px solid var(--accent-b);
+            display:flex;align-items:center;justify-content:center;transition:transform 0.3s;flex-shrink:0;
+        }
+        .expand-chevron svg{width:14px;height:14px;color:var(--accent)}
+        .expand-section.open .expand-chevron{transform:rotate(180deg)}
+        .expand-body{max-height:0;overflow:hidden;transition:max-height 0.5s ease}
+        .expand-section.open .expand-body{max-height:4000px}
+        .expand-inner{padding:0 0 40px}
+
+        /* Labels */
+        .label{font-size:11px;font-weight:500;color:var(--t3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:16px}
+        .desc{font-size:14px;color:var(--t2);max-width:640px;margin-bottom:32px;line-height:1.7}
+
+        /* Cards & Grids */
+        .card{background:var(--card);border:1px solid var(--border-s);border-radius:12px;padding:24px;margin-bottom:12px}
+        .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+        .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+        .g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
+
+        /* Bot detail */
+        .bot-detail{background:var(--card);border:1px solid var(--border-s);border-radius:12px;padding:28px;margin-bottom:14px}
+        .bot-header{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+        .bot-badge{width:32px;height:32px;border-radius:8px;background:var(--accent-s);border:1px solid var(--accent-b);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--accent);flex-shrink:0}
+        .bot-name{font-size:16px;font-weight:700}
+        .bot-role{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:0.04em}
+        .bot-persona{background:var(--bg);border:1px solid var(--border-s);border-radius:8px;padding:12px;font-size:13px;color:var(--t2);line-height:1.5;margin-bottom:16px}
+        .bot-cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+        .bot-cols h4{font-size:10px;font-weight:500;color:var(--t4);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px}
+        .bot-cols ul{list-style:none;padding:0}
+        .bot-cols li{font-size:13px;color:var(--t2);line-height:1.6;padding:3px 0 3px 14px;position:relative}
+        .bot-cols li::before{content:'';position:absolute;left:0;top:10px;width:4px;height:4px;border-radius:50%;background:var(--t4)}
+        .doc-links{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+        .doc-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--accent-l);padding:5px 12px;background:var(--accent-s);border:1px solid var(--accent-b);border-radius:6px;text-decoration:none;transition:background 0.2s}
+        .doc-link:hover{background:rgba(59,130,246,0.15);text-decoration:none}
+
+        /* Timeline */
+        .timeline{position:relative;padding-left:40px}
+        .timeline::before{content:'';position:absolute;left:15px;top:0;bottom:0;width:1px;background:var(--border)}
+        .tl-step{position:relative;padding:20px 0}
+        .tl-dot{position:absolute;left:-40px;top:24px;width:30px;height:30px;border-radius:8px;background:var(--accent-s);border:1px solid var(--accent-b);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--accent)}
+        .tl-content{display:flex;gap:20px;align-items:flex-start}
+        .tl-text{flex:1}
+        .tl-title{font-size:15px;font-weight:700;margin-bottom:4px}
+        .tl-desc{font-size:13px;color:var(--t2);line-height:1.7}
+        .tl-illust{width:64px;height:64px;flex-shrink:0;opacity:0.7}
+        .gate{display:inline-block;margin-top:8px;font-size:11px;font-weight:600;color:var(--accent);padding:3px 10px;border:1px solid var(--accent-b);border-radius:4px;animation:pulse 2s ease-in-out infinite}
+        @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,0.2)}50%{box-shadow:0 0 12px 2px rgba(59,130,246,0.12)}}
+
+        /* Brief fields */
+        .bf{background:var(--card);border:1px solid var(--border-s);border-radius:10px;padding:18px}
+        .bf-label{font-size:11px;font-weight:500;color:var(--accent);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px}
+        .bf-desc{font-size:13px;color:var(--t2);line-height:1.5}
+
+        /* PRD sections */
+        .prd-s{background:var(--card);border:1px solid var(--border-s);border-radius:10px;padding:18px;display:flex;gap:12px}
+        .prd-n{font-size:18px;font-weight:300;color:var(--t4);min-width:20px}
+        .prd-name{font-size:14px;font-weight:600;margin-bottom:3px}
+        .prd-desc{font-size:12px;color:var(--t3);line-height:1.5}
+
+        /* Rules */
+        .rule{background:var(--card);border:1px solid var(--border-s);border-radius:10px;padding:16px;transition:border-color 0.2s}
+        .rule:hover{border-color:var(--accent-b)}
+        .rule-n{font-size:10px;font-weight:700;color:var(--t4);letter-spacing:0.06em;margin-bottom:4px}
+        .rule-name{font-size:13px;font-weight:600;margin-bottom:3px}
+        .rule-desc{font-size:12px;color:var(--t3);line-height:1.5}
+
+        /* Methods */
+        .method{background:var(--card);border:1px solid var(--border-s);border-radius:12px;padding:22px}
+        .method-name{font-size:14px;font-weight:700;margin-bottom:6px}
+        .method-desc{font-size:12px;color:var(--t2);line-height:1.6}
+
+        /* Decision */
+        .dec{background:var(--card);border:1px solid var(--border-s);border-radius:12px;padding:24px}
+        .dec-type{font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px}
+        .dec-title{font-size:16px;font-weight:700;margin-bottom:6px}
+        .dec-desc{font-size:13px;color:var(--t2);line-height:1.6}
+
+        /* Doc grid */
+        .doc-card{background:var(--card);border:1px solid var(--border-s);border-radius:10px;padding:18px;display:block;text-decoration:none;transition:border-color 0.2s,transform 0.2s}
+        .doc-card:hover{border-color:var(--accent-b);transform:translateY(-1px);text-decoration:none}
+        .doc-type{font-size:10px;font-weight:600;color:var(--accent);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px}
+        .doc-name{font-size:14px;font-weight:600;color:var(--t1);margin-bottom:3px}
+        .doc-desc{font-size:12px;color:var(--t3);line-height:1.5}
+
+        /* Tools */
+        .tool{background:var(--card);border:1px solid var(--border-s);border-radius:10px;padding:16px}
+        .tool-name{font-size:13px;font-weight:600;margin-bottom:3px}
+        .tool-desc{font-size:12px;color:var(--t3);line-height:1.5;margin-bottom:6px}
+        .tool-bots{font-size:10px;font-weight:500;color:var(--accent);letter-spacing:0.04em}
+
+        /* Footer */
+        footer{border-top:1px solid var(--border-s);padding:24px 0}
+        footer .inner{display:flex;justify-content:space-between;align-items:center}
+        footer img{height:16px;opacity:0.25}
+        footer .meta{font-size:11px;color:var(--t4)}
+
+        @media(max-width:900px){
+            .exec-grid,.g2,.g3,.g4,.bot-cols,.flow-visual{display:block}
+            .flow-visual{flex-direction:column}
+            .flow-arrow{transform:rotate(90deg);height:24px;width:auto}
+            .ctr{padding:0 20px}
+            .hero h2{font-size:28px}
+            .stats{flex-wrap:wrap;gap:24px}
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="ctr"><div class="inner">
+        <div class="brand"><img src="logo_white.png" alt="Finexio"><div class="divider"></div><h1>Product Process</h1></div>
+        <div style="display:flex;align-items:center;gap:12px">
+            <div class="tag">Internal</div>
+            <div style="font-size:10px;color:var(--t3)">Updated Feb 2026</div>
+        </div>
+    </div></div>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+    <div class="ctr">
+        <div class="hero-label">How We Build at Finexio</div>
+        <h2>Got an idea? Let's make it happen.</h2>
+        <div class="subtitle">Whether it's a feature request, a bug that's driving you crazy, or a big idea you've been thinking about -- we've got a fast, clear process to turn it into reality. You bring the idea. We handle the rest.</div>
+        <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap">
+            <div style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px;background:var(--accent);border-radius:8px;font-size:14px;font-weight:600;color:white;cursor:pointer" onclick="openSection('bots')">See How It Works</div>
+            <a href="docs/prd-brief-template.md" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px;background:var(--accent-s);border:1px solid var(--accent-b);border-radius:8px;font-size:14px;font-weight:500;color:var(--accent-l);text-decoration:none">View Templates</a>
+        </div>
+        <div class="stats">
+            <div><div class="stat-num" data-target="3">0</div><div class="stat-label">AI Assistants</div></div>
+            <div><div class="stat-num" data-target="6">0</div><div class="stat-label">Easy Steps</div></div>
+            <div><div class="stat-num" data-target="2">0</div><div class="stat-label">Quality Checks</div></div>
+            <div><div class="stat-num" data-target="19">0</div><div class="stat-label">Quality Rules</div></div>
+            <div><div class="stat-num" data-target="9">0</div><div class="stat-label">Reference Docs</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ HOW IT WORKS ═══ -->
+<div class="exec">
+    <div class="ctr">
+        <div class="label">Three Simple Steps</div>
+
+        <div class="exec-grid">
+            <div class="exec-card">
+                <div class="exec-icon"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="14" stroke="#3b82f6" stroke-width="1.5" opacity="0.5"/><path d="M14 18h8M18 14v8" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/></svg></div>
+                <div class="exec-title">1. You Share Your Idea</div>
+                <div class="exec-desc">Drop it in however works for you -- a Slack message, a Zoom recording, an email, a ClickUp ticket, even a voice memo. No forms to fill out. No templates required. Just tell us what you're thinking.</div>
+            </div>
+            <div class="exec-card">
+                <div class="exec-icon"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="6" y="8" width="24" height="20" rx="4" stroke="#3b82f6" stroke-width="1.5" opacity="0.5"/><path d="M12 16h12M12 20h8" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/><circle cx="28" cy="12" r="5" fill="#3b82f6" opacity="0.15" stroke="#3b82f6" stroke-width="1"/><path d="M26 12l2 2 3-3" stroke="#60a5fa" stroke-width="1" stroke-linecap="round"/></svg></div>
+                <div class="exec-title">2. AI Does the Heavy Lifting</div>
+                <div class="exec-desc">Our AI assistants research, structure, and draft everything -- the problem brief, the full requirements doc, even the engineering stories. You review and approve. No back-and-forth. No waiting weeks.</div>
+            </div>
+            <div class="exec-card">
+                <div class="exec-icon"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M8 26l8-10 5 5 7-9" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/><circle cx="28" cy="12" r="4" fill="#3b82f6" opacity="0.15" stroke="#60a5fa" stroke-width="1"/><path d="M11 28l-3-3M14 28l-3-3M17 28l-3-3M20 28l-3-3M23 28l-3-3M26 28l-3-3" stroke="#60a5fa" stroke-width="0.5" stroke-linecap="round" opacity="0.3"/></svg></div>
+                <div class="exec-title">3. Your Idea Ships</div>
+                <div class="exec-desc">Engineers get crystal-clear requirements. No guessing. No "what did they mean by that?" meetings. Your idea goes from concept to code, fast. And you can track it every step of the way.</div>
+            </div>
+        </div>
+
+        <!-- Visual Process Flow -->
+        <div style="margin-top:12px">
+            <div class="label" style="text-align:center;margin-bottom:24px">The Journey of Your Idea</div>
+            <div class="flow-visual">
+                <div class="flow-node" onclick="openSection('bots')" style="border-left:3px solid var(--accent)">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="margin-bottom:8px"><circle cx="16" cy="16" r="12" stroke="#3b82f6" stroke-width="1.5" opacity="0.4"/><path d="M12 16h8M16 12v8" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    <div class="flow-node-num">STEP 1</div>
+                    <div class="flow-node-name">Submit</div>
+                    <div class="flow-node-sub">Any format works</div>
+                    <div class="flow-node-out">You share your idea</div>
+                </div>
+                <div class="flow-arrow"><svg viewBox="0 0 32 32" fill="none"><path d="M8 16h16M20 11l4 5-4 5" stroke="#334155" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="flow-node" onclick="openSection('bots')">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="margin-bottom:8px"><circle cx="14" cy="14" r="8" stroke="#3b82f6" stroke-width="1.5" opacity="0.4"/><line x1="20" y1="20" x2="27" y2="27" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    <div class="flow-node-num">STEP 2</div>
+                    <div class="flow-node-name">Research</div>
+                    <div class="flow-node-sub">AI investigates</div>
+                    <div class="flow-node-out">Context gathered</div>
+                </div>
+                <div class="flow-arrow"><svg viewBox="0 0 32 32" fill="none"><path d="M8 16h16M20 11l4 5-4 5" stroke="#334155" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="flow-node" onclick="openSection('brief')">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="margin-bottom:8px"><rect x="6" y="4" width="20" height="24" rx="2" stroke="#3b82f6" stroke-width="1.5" opacity="0.4"/><path d="M10 10h12M10 14h10M10 18h8" stroke="#60a5fa" stroke-width="1" stroke-linecap="round"/></svg>
+                    <div class="flow-node-num">STEP 3</div>
+                    <div class="flow-node-name">Brief</div>
+                    <div class="flow-node-sub">Problem framed</div>
+                    <div class="flow-node-out" style="color:var(--accent)">You confirm</div>
+                </div>
+                <div class="flow-arrow"><svg viewBox="0 0 32 32" fill="none"><path d="M8 16h16M20 11l4 5-4 5" stroke="#334155" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="flow-node" onclick="openSection('prd')">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="margin-bottom:8px"><rect x="4" y="4" width="16" height="22" rx="2" stroke="#3b82f6" stroke-width="1.5" opacity="0.4"/><rect x="12" y="8" width="16" height="22" rx="2" stroke="#60a5fa" stroke-width="1" opacity="0.25"/><path d="M8 10h8M8 14h6" stroke="#60a5fa" stroke-width="1" stroke-linecap="round"/></svg>
+                    <div class="flow-node-num">STEP 4</div>
+                    <div class="flow-node-name">PRD</div>
+                    <div class="flow-node-sub">Full requirements</div>
+                    <div class="flow-node-out">Expert review</div>
+                </div>
+                <div class="flow-arrow"><svg viewBox="0 0 32 32" fill="none"><path d="M8 16h16M20 11l4 5-4 5" stroke="#334155" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div class="flow-node" onclick="openSection('bots')" style="border-right:3px solid var(--accent)">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="margin-bottom:8px"><path d="M8 24l8-12 8 12" stroke="#3b82f6" stroke-width="1.5" opacity="0.4" fill="#3b82f6" fill-opacity="0.04"/><circle cx="16" cy="16" r="3" fill="#60a5fa" opacity="0.3"/></svg>
+                    <div class="flow-node-num">STEP 5</div>
+                    <div class="flow-node-name">Ship</div>
+                    <div class="flow-node-sub">Sprint-ready</div>
+                    <div class="flow-node-out">Engineers build it</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- What You Can Expect -->
+        <div style="margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="exec-card" style="border-left:2px solid var(--accent)">
+                <div class="exec-title" style="font-size:14px">What We Promise</div>
+                <div class="exec-desc">
+                    <div style="margin-bottom:6px">Your idea gets captured exactly right</div>
+                    <div style="margin-bottom:6px">You'll be consulted before anything is finalized</div>
+                    <div style="margin-bottom:6px">Engineers get clear, unambiguous requirements</div>
+                    <div>Full traceability from your request to shipped code</div>
+                </div>
+            </div>
+            <div class="exec-card" style="border-left:2px solid var(--accent)">
+                <div class="exec-title" style="font-size:14px">What We'll Never Do</div>
+                <div class="exec-desc">
+                    <div style="margin-bottom:6px">Make you fill out a 20-field form</div>
+                    <div style="margin-bottom:6px">Let your request sit in a queue for weeks</div>
+                    <div style="margin-bottom:6px">Build something different from what you asked for</div>
+                    <div>Ship without you seeing the plan first</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Who This Is For -->
+        <div style="margin-top:40px">
+            <div class="label" style="text-align:center;margin-bottom:20px">Built For Everyone</div>
+            <div class="g4">
+                <div class="exec-card" style="text-align:center;padding:20px">
+                    <div style="font-size:28px;margin-bottom:8px;opacity:0.5">&#9733;</div>
+                    <div class="exec-title" style="font-size:13px">Executives</div>
+                    <div class="exec-desc" style="font-size:12px">See what's being built and why. Track ideas from request to delivery.</div>
+                </div>
+                <div class="exec-card" style="text-align:center;padding:20px">
+                    <div style="font-size:28px;margin-bottom:8px;opacity:0.5">&#9881;</div>
+                    <div class="exec-title" style="font-size:13px">Operations</div>
+                    <div class="exec-desc" style="font-size:12px">Submit pain points directly. No middleman. Your problems get heard.</div>
+                </div>
+                <div class="exec-card" style="text-align:center;padding:20px">
+                    <div style="font-size:28px;margin-bottom:8px;opacity:0.5">&#9998;</div>
+                    <div class="exec-title" style="font-size:13px">Product</div>
+                    <div class="exec-desc" style="font-size:12px">Consistent PRDs every time. AI handles the structure. You handle the strategy.</div>
+                </div>
+                <div class="exec-card" style="text-align:center;padding:20px">
+                    <div style="font-size:28px;margin-bottom:8px;opacity:0.5">&#9874;</div>
+                    <div class="exec-title" style="font-size:13px">Engineering</div>
+                    <div class="exec-desc" style="font-size:12px">Sprint-ready stories with clear ACs. No guessing. No "what did they mean?" meetings.</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="font-size:12px;color:var(--t3);text-align:center;padding:24px 0 0">Expand any section below for the full detail</div>
+    </div>
+</div>
+
+<!-- ═══ EXPANDABLE SECTIONS ═══ -->
+<div class="ctr">
+
+<!-- 1. AI Assistants Detail -->
+<div class="expand-section" id="sec-bots">
+    <div class="expand-header" onclick="toggle('bots')">
+        <div><h3>AI Assistants <span class="hint">What each Claude Project bot does</span></h3></div>
+        <div class="expand-chevron"><svg viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="expand-body">
+        <div class="expand-inner">
+            <div class="bot-detail">
+                <div class="bot-header"><div class="bot-badge">1</div><div><div class="bot-name">PRD Intake Assistant</div><div class="bot-role">For anyone with a product request</div></div></div>
+                <div class="bot-persona"><strong style="color:var(--t3)">Personality:</strong> Friendly, efficient, no-nonsense. Respects people's time. Under 10 minutes.</div>
+                <div class="bot-cols">
+                    <div><h4>Capabilities</h4><ul><li>Accepts any input: transcripts, emails, tickets, voice memos</li><li>Two paths: guided walkthrough (6 questions) or fast-track paste</li><li>Web search to verify stakeholder claims in real time</li><li>Cross-references Knowledge Base automatically</li><li>Conversational mode for ambiguous inputs</li></ul></div>
+                    <div><h4>The 6 Questions</h4><ul><li><strong>Q1:</strong> What's the problem? (not the solution)</li><li><strong>Q2:</strong> Who owns this today?</li><li><strong>Q3:</strong> What's the scope?</li><li><strong>Q4:</strong> Ideas on how to fix it?</li><li><strong>Q5:</strong> Biggest assumption?</li><li><strong>Q6:</strong> Anything else Product should know?</li></ul></div>
+                </div>
+                <div class="doc-links"><a href="docs/claude-project-intake.md" target="_blank" class="doc-link">📄 Full Instructions</a><a href="docs/prd-brief-template.md" target="_blank" class="doc-link">📋 Brief Template</a></div>
+            </div>
+            <div class="bot-detail">
+                <div class="bot-header"><div class="bot-badge">2</div><div><div class="bot-name">PRD Builder</div><div class="bot-role">For Product Managers</div></div></div>
+                <div class="bot-persona"><strong style="color:var(--t3)">Personality:</strong> Precise, thorough, structured. Thinks like a senior PM who has been burned by vague requirements.</div>
+                <div class="bot-cols">
+                    <div><h4>Capabilities</h4><ul><li>Takes validated Brief or raw PM input</li><li>Self-research: web search, Knowledge Base, Confluence</li><li>Verifies regulatory context (Nacha, PCI, SOC2)</li><li>Generates 8-section PRD with SCQ problem statement</li><li>Classifies decisions: reversible vs. irreversible</li><li>Flags uncertain sections with VERIFY tags</li></ul></div>
+                    <div><h4>PRD Sections</h4><ul><li><strong>1.</strong> Problem Statement (SCQ)</li><li><strong>2.</strong> Business Rationale</li><li><strong>3.</strong> Functional Requirements (MECE)</li><li><strong>4.</strong> System Reality Check</li><li><strong>5.</strong> Constraints + Compliance</li><li><strong>6.</strong> Success Metrics</li><li><strong>7.</strong> Decisions + Open Questions</li><li><strong>8.</strong> Partner Context</li></ul></div>
+                </div>
+                <div class="doc-links"><a href="docs/claude-project-prd-builder.md" target="_blank" class="doc-link">📄 Full Instructions</a><a href="docs/prd-template.md" target="_blank" class="doc-link">📋 PRD Template</a><a href="docs/reviewer-questions-template.md" target="_blank" class="doc-link">❓ Review Questions</a></div>
+            </div>
+            <div class="bot-detail">
+                <div class="bot-header"><div class="bot-badge">3</div><div><div class="bot-name">Story Writer</div><div class="bot-role">For Engineering Leads</div></div></div>
+                <div class="bot-persona"><strong style="color:var(--t3)">Personality:</strong> Engineering-minded, zero ambiguity. Thinks like a senior engineer burned by "the system should work correctly" as acceptance criteria.</div>
+                <div class="bot-cols">
+                    <div><h4>Capabilities</h4><ul><li>Takes approved PRD (checks Pipeline Handoff block)</li><li>Maps P0/P1 requirements to individual stories</li><li>Given/When/Then ACs (happy + edge + error paths)</li><li>Sizes stories: S/M/L (one dev, one sprint)</li><li>Dependency map and sprint ordering</li><li>PRD compliance check before generating</li></ul></div>
+                    <div><h4>Story Structure</h4><ul><li><strong>Metadata:</strong> Story ID, parent PRD, sizing</li><li><strong>User Story:</strong> As a [persona], I need...</li><li><strong>Why:</strong> Business outcome + cost of not building</li><li><strong>Current State:</strong> System context, code refs</li><li><strong>ACs:</strong> Given/When/Then every path</li><li><strong>Edge Cases:</strong> Bulk, failures, permissions</li><li><strong>Story Map:</strong> Dependencies + sprints</li></ul></div>
+                </div>
+                <div class="doc-links"><a href="docs/claude-project-story-writer.md" target="_blank" class="doc-link">📄 Full Instructions</a><a href="docs/story-template.md" target="_blank" class="doc-link">📋 Story Template</a></div>
+            </div>
+
+            <!-- Tools -->
+            <div class="label" style="margin-top:24px">Available Tools</div>
+            <div class="g4">
+                <div class="tool"><div class="tool-name">Web Search</div><div class="tool-desc">Verify claims, regulatory context, competitive analysis</div><div class="tool-bots">All 3 Projects</div></div>
+                <div class="tool"><div class="tool-name">Extended Thinking</div><div class="tool-desc">Deep reasoning for SCQ, requirement decomposition</div><div class="tool-bots">All 3 Projects</div></div>
+                <div class="tool"><div class="tool-name">Confluence</div><div class="tool-desc">Specs, architecture, past PRDs, decisions</div><div class="tool-bots">Builder + Writer</div></div>
+                <div class="tool"><div class="tool-name">Knowledge Base</div><div class="tool-desc">Terminology, payment flows, compliance</div><div class="tool-bots">All 3 Projects</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. Workflow -->
+<div class="expand-section" id="sec-workflow">
+    <div class="expand-header" onclick="toggle('workflow')">
+        <div><h3>Workflow <span class="hint">6 steps, 2 quality gates</span></h3></div>
+        <div class="expand-chevron"><svg viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="expand-body"><div class="expand-inner">
+        <div class="timeline">
+            <div class="tl-step"><div class="tl-dot">1</div><div class="tl-content"><div class="tl-text"><div class="tl-title">Capture</div><div class="tl-desc">Raw input normalized. Transcripts, emails, tickets, voice memos. Speakers parsed, decisions separated from discussion.</div></div><svg class="tl-illust" viewBox="0 0 64 64" fill="none"><rect x="8" y="12" width="48" height="40" rx="5" stroke="#3b82f6" stroke-width="1.5" opacity="0.5"/><path d="M20 28h24M20 36h16" stroke="#60a5fa" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>
+            <div class="tl-step"><div class="tl-dot">2</div><div class="tl-content"><div class="tl-text"><div class="tl-title">Research</div><div class="tl-desc">AI self-research before asking humans. Web search, Knowledge Base, Confluence. Verify claims. Time-boxed: 5-15 min.</div></div><svg class="tl-illust" viewBox="0 0 64 64" fill="none"><circle cx="28" cy="28" r="14" stroke="#3b82f6" stroke-width="1.5" opacity="0.5"/><line x1="38" y1="38" x2="52" y2="52" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/></svg></div></div>
+            <div class="tl-step"><div class="tl-dot">3</div><div class="tl-content"><div class="tl-text"><div class="tl-title">Problem Brief</div><div class="tl-desc">Half-page framing doc (6 fields). Sent to domain SME for confirmation before PRD work begins.</div><div class="gate">⬥ Gate 1: SME Validation</div></div><svg class="tl-illust" viewBox="0 0 64 64" fill="none"><rect x="12" y="8" width="40" height="48" rx="3" stroke="#3b82f6" stroke-width="1.5" opacity="0.5"/><path d="M20 20h24M20 27h20M20 34h16M20 41h22" stroke="#475569" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>
+            <div class="tl-step"><div class="tl-dot">4</div><div class="tl-content"><div class="tl-text"><div class="tl-title">Full PRD Draft</div><div class="tl-desc">8-section PRD: SCQ, business rationale, MECE requirements (P0/P1/P2), system check, constraints, metrics, decisions.</div></div><svg class="tl-illust" viewBox="0 0 64 64" fill="none"><rect x="8" y="8" width="32" height="44" rx="3" stroke="#3b82f6" stroke-width="1.5" opacity="0.5"/><rect x="24" y="16" width="32" height="44" rx="3" stroke="#60a5fa" stroke-width="1" opacity="0.3"/><path d="M14 20h20M14 26h16M14 32h14" stroke="#475569" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>
+            <div class="tl-step"><div class="tl-dot">5</div><div class="tl-content"><div class="tl-text"><div class="tl-title">SME Review</div><div class="tl-desc">5 structured questions. Any feedback format. Conflicts trigger return to Brief. 48-hour timeout.</div><div class="gate">⬥ Gate 2: PRD Approved</div></div><svg class="tl-illust" viewBox="0 0 64 64" fill="none"><circle cx="24" cy="22" r="10" stroke="#3b82f6" stroke-width="1.5" opacity="0.5"/><circle cx="44" cy="26" r="10" stroke="#60a5fa" stroke-width="1" opacity="0.3"/><path d="M22 20v3M26 20v3" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>
+            <div class="tl-step"><div class="tl-dot">6</div><div class="tl-content"><div class="tl-text"><div class="tl-title">Ship</div><div class="tl-desc">Branding, QA checklist (AI audit), Word doc delivery. User stories downstream with ACs, sizing, dependencies.</div></div><svg class="tl-illust" viewBox="0 0 64 64" fill="none"><path d="M12 44l20-28 20 28" stroke="#3b82f6" stroke-width="1.5" opacity="0.5" fill="#3b82f6" fill-opacity="0.04"/><circle cx="32" cy="28" r="4" fill="#3b82f6" opacity="0.25"/></svg></div></div>
+        </div>
+    </div></div>
+</div>
+
+<!-- 3. Problem Brief -->
+<div class="expand-section" id="sec-brief">
+    <div class="expand-header" onclick="toggle('brief')">
+        <div><h3>Problem Brief <span class="hint">Gate 1 -- 6 fields, half a page</span></h3></div>
+        <div class="expand-chevron"><svg viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="expand-body"><div class="expand-inner">
+        <div class="desc">Catches "wrong problem" framing before anyone writes a full PRD. <a href="docs/prd-brief-template.md" target="_blank">View template →</a></div>
+        <div class="g2">
+            <div class="bf"><div class="bf-label">Problem in One Sentence</div><div class="bf-desc">What is broken or missing, and what is the consequence?</div></div>
+            <div class="bf"><div class="bf-label">Who Owns This Today</div><div class="bf-desc">Which team handles this operationally right now?</div></div>
+            <div class="bf"><div class="bf-label">Who Is Affected</div><div class="bf-desc">Which users or internal teams experience the pain?</div></div>
+            <div class="bf"><div class="bf-label">Scope</div><div class="bf-desc">Systems, partners, payment types. One partner or all?</div></div>
+            <div class="bf"><div class="bf-label">Solution Direction</div><div class="bf-desc">Rough approach: field controls, workflow, detection logic, API?</div></div>
+            <div class="bf"><div class="bf-label">Key Assumption</div><div class="bf-desc">The single biggest assumption that, if wrong, changes everything.</div></div>
+        </div>
+    </div></div>
+</div>
+
+<!-- 4. PRD Structure -->
+<div class="expand-section" id="sec-prd">
+    <div class="expand-header" onclick="toggle('prd')">
+        <div><h3>PRD Structure <span class="hint">Gate 2 -- 8 sections</span></h3></div>
+        <div class="expand-chevron"><svg viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="expand-body"><div class="expand-inner">
+        <div class="desc">Every section earns its place. <a href="docs/prd-template.md" target="_blank">View template →</a></div>
+        <div class="g2">
+            <div class="prd-s"><div class="prd-n">1</div><div><div class="prd-name">Problem Statement (SCQ)</div><div class="prd-desc">Situation, Complication, Question. Four lines max.</div></div></div>
+            <div class="prd-s"><div class="prd-n">2</div><div><div class="prd-name">Business Rationale</div><div class="prd-desc">Strategic alignment, revenue impact, who asked.</div></div></div>
+            <div class="prd-s"><div class="prd-n">3</div><div><div class="prd-name">Functional Requirements</div><div class="prd-desc">P0/P1/P2, MECE, testable behaviors.</div></div></div>
+            <div class="prd-s"><div class="prd-n">4</div><div><div class="prd-name">System Reality Check</div><div class="prd-desc">Current state, what changes, what doesn't.</div></div></div>
+            <div class="prd-s"><div class="prd-n">5</div><div><div class="prd-name">Constraints</div><div class="prd-desc">SOC2, PCI, Nacha, performance, exclusions.</div></div></div>
+            <div class="prd-s"><div class="prd-n">6</div><div><div class="prd-name">Success Metrics</div><div class="prd-desc">Baseline, target, method, timeframe.</div></div></div>
+            <div class="prd-s"><div class="prd-n">7</div><div><div class="prd-name">Decisions Log</div><div class="prd-desc">Reversible (now) vs. irreversible (deliberate).</div></div></div>
+            <div class="prd-s"><div class="prd-n">8</div><div><div class="prd-name">Partner Context</div><div class="prd-desc">Integration points, partner-specific needs.</div></div></div>
+        </div>
+    </div></div>
+</div>
+
+<!-- 5. Decision Framework -->
+<div class="expand-section" id="sec-decisions">
+    <div class="expand-header" onclick="toggle('decisions')">
+        <div><h3>Decision Framework <span class="hint">Reversible vs. irreversible</span></h3></div>
+        <div class="expand-chevron"><svg viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="expand-body"><div class="expand-inner">
+        <div class="g2">
+            <div class="dec"><div class="dec-type">Type 1: Reversible</div><div class="dec-title">Decide now. Move on.</div><div class="dec-desc">UI copy, config defaults, notification thresholds, feature flags. PM decides immediately.</div></div>
+            <div class="dec"><div class="dec-type">Type 2: Irreversible</div><div class="dec-title">Deliberate. Then commit.</div><div class="dec-desc">Data model changes, API contracts, compliance implications. Requires stakeholder sign-off.</div></div>
+        </div>
+    </div></div>
+</div>
+
+<!-- 6. Methodologies -->
+<div class="expand-section" id="sec-methods">
+    <div class="expand-header" onclick="toggle('methods')">
+        <div><h3>Methodologies <span class="hint">Minto, Cagan, Bezos, JTBD</span></h3></div>
+        <div class="expand-chevron"><svg viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="expand-body"><div class="expand-inner">
+        <div class="g4">
+            <div class="method"><div class="method-name">Minto Pyramid</div><div class="method-desc">SCQ problem statements. MECE requirements. Top-down communication.</div></div>
+            <div class="method"><div class="method-name">Cagan</div><div class="method-desc">Problem-first. Separate problem from solution. Empower engineering.</div></div>
+            <div class="method"><div class="method-name">Bezos</div><div class="method-desc">Decision classification. Reversible = fast. Irreversible = deliberate.</div></div>
+            <div class="method"><div class="method-name">JTBD</div><div class="method-desc">Stories as jobs-to-be-done. Outcome over feature.</div></div>
+        </div>
+    </div></div>
+</div>
+
+<!-- 7. Quality Rules -->
+<div class="expand-section" id="sec-rules">
+    <div class="expand-header" onclick="toggle('rules')">
+        <div><h3>Quality Rules <span class="hint">19 rules, zero exceptions</span></h3></div>
+        <div class="expand-chevron"><svg viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="expand-body"><div class="expand-inner">
+        <div class="desc">Derived from real failures. AI QA audits every document. <a href="docs/quality-rules.md" target="_blank">View full rules →</a></div>
+        <div class="g3">
+            <div class="rule"><div class="rule-n">01</div><div class="rule-name">Transform, Don't Polish</div><div class="rule-desc">Intake forms are input, not output.</div></div>
+            <div class="rule"><div class="rule-n">02</div><div class="rule-name">PRD ≠ Stories</div><div class="rule-desc">What/why and how-to-build are separate.</div></div>
+            <div class="rule"><div class="rule-n">03</div><div class="rule-name">Find the Real Persona</div><div class="rule-desc">Who has the pain, not who filed it.</div></div>
+            <div class="rule"><div class="rule-n">04</div><div class="rule-name">Given/When/Then Only</div><div class="rule-desc">Bullets are not acceptance criteria.</div></div>
+            <div class="rule"><div class="rule-n">05</div><div class="rule-name">System Context Required</div><div class="rule-desc">No context = request, not requirement.</div></div>
+            <div class="rule"><div class="rule-n">06</div><div class="rule-name">One Feature Per Story</div><div class="rule-desc">Different systems = different stories.</div></div>
+            <div class="rule"><div class="rule-n">07</div><div class="rule-name">Explicit Exclusions</div><div class="rule-desc">State what is NOT in scope.</div></div>
+            <div class="rule"><div class="rule-n">08</div><div class="rule-name">Questions Must Block</div><div class="rule-desc">Owner, deadline, impact for each.</div></div>
+            <div class="rule"><div class="rule-n">09</div><div class="rule-name">Output Replaces Input</div><div class="rule-desc">Never paste original "for reference."</div></div>
+            <div class="rule"><div class="rule-n">10</div><div class="rule-name">Quantified Metrics</div><div class="rule-desc">Baseline, target, method, timeframe.</div></div>
+            <div class="rule"><div class="rule-n">11</div><div class="rule-name">SCQ Every Problem</div><div class="rule-desc">Situation, Complication, Question.</div></div>
+            <div class="rule"><div class="rule-n">12</div><div class="rule-name">Tag Every Decision</div><div class="rule-desc">Reversible = now. Irreversible = discuss.</div></div>
+            <div class="rule"><div class="rule-n">13</div><div class="rule-name">Simplest Solution First</div><div class="rule-desc">Don't propose AI when "lock field" works.</div></div>
+            <div class="rule"><div class="rule-n">14</div><div class="rule-name">Verify Team Assignments</div><div class="rule-desc">Wrong team = doesn't understand org.</div></div>
+            <div class="rule"><div class="rule-n">15</div><div class="rule-name">Facts vs. Assumptions</div><div class="rule-desc">VERIFY tags. Cite sources. No guessing.</div></div>
+            <div class="rule"><div class="rule-n">16</div><div class="rule-name">Read Request Literally</div><div class="rule-desc">Don't expand scope without asking.</div></div>
+            <div class="rule"><div class="rule-n">17</div><div class="rule-name">Flag Secondary Sources</div><div class="rule-desc">Non-owners may describe symptoms.</div></div>
+            <div class="rule"><div class="rule-n">18</div><div class="rule-name">48-Hour SME Timeout</div><div class="rule-desc">No response = escalate or proceed.</div></div>
+            <div class="rule"><div class="rule-n">19</div><div class="rule-name">Research Completeness</div><div class="rule-desc">Fill all 6 fields or mark UNKNOWN.</div></div>
+        </div>
+    </div></div>
+</div>
+
+<!-- 8. Document Library -->
+<div class="expand-section" id="sec-docs">
+    <div class="expand-header" onclick="toggle('docs')">
+        <div><h3>Document Library <span class="hint">9 reference documents</span></h3></div>
+        <div class="expand-chevron"><svg viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="expand-body"><div class="expand-inner">
+        <div class="g3">
+            <a href="docs/claude-project-intake.md" target="_blank" class="doc-card"><div class="doc-type">Project 1</div><div class="doc-name">PRD Intake Instructions</div><div class="doc-desc">Full Claude Project instructions</div></a>
+            <a href="docs/claude-project-prd-builder.md" target="_blank" class="doc-card"><div class="doc-type">Project 2</div><div class="doc-name">PRD Builder Instructions</div><div class="doc-desc">Full Claude Project instructions</div></a>
+            <a href="docs/claude-project-story-writer.md" target="_blank" class="doc-card"><div class="doc-type">Project 3</div><div class="doc-name">Story Writer Instructions</div><div class="doc-desc">Full Claude Project instructions</div></a>
+            <a href="docs/prd-brief-template.md" target="_blank" class="doc-card"><div class="doc-type">Template</div><div class="doc-name">Problem Brief</div><div class="doc-desc">6-field Gate 1 template</div></a>
+            <a href="docs/prd-template.md" target="_blank" class="doc-card"><div class="doc-type">Template</div><div class="doc-name">PRD Template</div><div class="doc-desc">8-section PRD structure</div></a>
+            <a href="docs/story-template.md" target="_blank" class="doc-card"><div class="doc-type">Template</div><div class="doc-name">User Story Template</div><div class="doc-desc">Sprint-ready story format</div></a>
+            <a href="docs/quality-rules.md" target="_blank" class="doc-card"><div class="doc-type">Reference</div><div class="doc-name">Quality Rules</div><div class="doc-desc">19 rules with examples</div></a>
+            <a href="docs/reviewer-questions-template.md" target="_blank" class="doc-card"><div class="doc-type">Reference</div><div class="doc-name">Reviewer Questions</div><div class="doc-desc">5 structured review questions</div></a>
+            <a href="docs/prd-qa-checklist.md" target="_blank" class="doc-card"><div class="doc-type">Reference</div><div class="doc-name">QA Checklist</div><div class="doc-desc">Pre-delivery quality audit</div></a>
+        </div>
+    </div></div>
+</div>
+
+</div><!-- /ctr -->
+
+<footer><div class="ctr"><div class="inner"><img src="logo_white.png" alt="Finexio"><div class="meta">Finexio Product Process · Confidential</div></div></div></footer>
+
+<script>
+// Toggle sections
+function toggle(id) {
+    const el = document.getElementById('sec-' + id);
+    el.classList.toggle('open');
+}
+function openSection(id) {
+    const el = document.getElementById('sec-' + id);
+    if (!el.classList.contains('open')) {
+        el.classList.add('open');
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+}
+
+// Animated counters
+function animateCounters() {
+    document.querySelectorAll('.stat-num[data-target]').forEach(el => {
+        const target = parseInt(el.dataset.target);
+        const start = performance.now();
+        function step(now) {
+            const p = Math.min((now - start) / 1000, 1);
+            el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+            if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    });
+}
+const co = new IntersectionObserver(e => e.forEach(entry => { if (entry.isIntersecting) { animateCounters(); co.unobserve(entry.target); } }), { threshold: 0.5 });
+const sr = document.querySelector('.stats');
+if (sr) co.observe(sr);
+
+// Fade in
+const io = new IntersectionObserver(e => e.forEach(entry => { if (entry.isIntersecting) { entry.target.style.opacity='1'; entry.target.style.transform='translateY(0)'; } }), { threshold: 0.05 });
+document.querySelectorAll('.expand-section,.exec,.hero').forEach(s => {
+    s.style.opacity='0'; s.style.transform='translateY(16px)';
+    s.style.transition='opacity 0.5s ease, transform 0.5s ease';
+    io.observe(s);
+});
+</script>
+</body>
+</html>
