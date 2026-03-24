@@ -1,715 +1,334 @@
-<!-- Vercel Re-deploy Trigger -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Finexio - Intelligence Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <title>Finexio Intelligence | Private Equity Dashboard</title>
+  
+  <!-- Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   
-  <!-- Data Sources -->
-  <script src="customer_value_data.js"></script>
-  <script src="cbm_insights_data.js"></script>
-  <script src="ops_data.js"></script>
+  <!-- Icons: Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
   
-  <style>
-    /* Stripe-Grade Theme */
-    :root {
-      --bg-main: #F6F9FC;
-      --panel-bg: #FFFFFF;
-      --border-soft: #E3E8EE;
-      --text-dark: #0A2540;
-      --text-muted: #425466;
-      --text-lighter: #8792A2;
-      --accent-primary: #635BFF;
-      --accent-hover: #0A2540;
-      --accent-success: #0ebd7d;
-      --accent-warning: #f5a623;
-      --accent-danger: #df1b41;
-      --shadow-sm: 0 2px 5px -1px rgba(50, 50, 93, 0.05), 0 1px 3px -1px rgba(0, 0, 0, 0.03);
-      --shadow-md: 0 4px 6px -1px rgba(50, 50, 93, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-      --shadow-hover: 0 7px 14px 0 rgba(50, 50, 93, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.08);
-    }
-
-    *, *::before, *::after { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg-main); color: var(--text-dark); }
-
-    /* Header & Navigation */
-    header { background: var(--panel-bg); padding: 1.5rem 2.5rem; border-bottom: 1px solid var(--border-soft); display: flex; align-items: baseline; justify-content: space-between; }
-    .brand-title { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; color: var(--text-dark); }
-    .brand-subtitle { font-size: 0.875rem; color: var(--text-muted); font-weight: 500; margin-left: 1rem; }
-    
-    .tab-nav { display: flex; gap: 2.5rem; padding: 0 2.5rem; border-bottom: 1px solid var(--border-soft); background: var(--panel-bg); }
-    .tab-btn { position: relative; padding: 1.25rem 0; font-size: 0.9375rem; font-weight: 500; color: var(--text-muted); background: transparent; border: none; cursor: pointer; transition: color 0.2s; white-space: nowrap; }
-    .tab-btn::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: transparent; transition: background 0.2s; border-radius: 2px 2px 0 0; }
-    .tab-btn.active { color: var(--accent-primary); font-weight: 600; }
-    .tab-btn.active::after { background: var(--accent-primary); }
-    .tab-btn:hover:not(.active) { color: var(--accent-hover); }
-
-    /* Layout */
-    .dashboard-container { padding: 2.5rem; max-width: 1400px; margin: 0 auto; display: none; }
-    .dashboard-container.active { display: block; animation: fadeIn 0.3s ease-out; }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(5px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
-    .kpi-card { background: var(--panel-bg); border-radius: 8px; padding: 1.5rem; box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s; position: relative; border-top: 3px solid transparent; }
-    .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
-    .kpi-title { font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.025em; color: var(--text-muted); margin-bottom: 0.5rem; }
-    .kpi-value { font-size: 2rem; font-weight: 600; line-height: 1.2; color: var(--text-dark); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-    .kpi-sub { font-size: 0.8125rem; color: var(--text-lighter); margin-top: 0.5rem; font-weight: 500; }
-
-    /* Chart Rows */
-    .analysis-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; align-items: stretch; }
-    .analysis-row.full { grid-template-columns: 1fr; }
-    .analysis-card { background: var(--panel-bg); border-radius: 8px; padding: 1.5rem; display: flex; flex-direction: column; box-shadow: var(--shadow-sm); transition: box-shadow 0.2s; }
-    .analysis-card:hover { box-shadow: var(--shadow-md); }
-
-    .chart-header { font-size: 1rem; font-weight: 600; color: var(--text-dark); margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-soft); padding-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
-    .chart-header-sub { font-size: 0.8125rem; font-weight: 500; color: var(--text-muted); }
-    
-    .chart-container { position: relative; height: 350px; width: 100%; flex-grow: 1; }
-    
-    /* Interactive Hover State (Simulated) */
-    .chart-container canvas { cursor: pointer; }
-  </style>
-</head>
-<body>
-
-  <header>
-    <div style="display: flex; align-items: baseline;">
-      <div class="brand-title">Finexio</div>
-      <div class="brand-subtitle">Operational Intelligence</div>
-    </div>
-  </header>
-
-  <nav class="tab-nav">
-    <button class="tab-btn active" onclick="switchTab('customer-value')">Customer Value</button>
-    <button class="tab-btn" onclick="switchTab('cbm-insights')">CBM Insights</button>
-    <button class="tab-btn" onclick="switchTab('ops')">Support & Ops</button>
-  </nav>
-
-  <!-- CUSTOMER VALUE TAB -->
-  <main id="customer-value" class="dashboard-container active">
-    
-    <div class="kpi-grid">
-      <div class="kpi-card" style="border-top-color: var(--accent-primary);">
-        <div class="kpi-title">30-Day Volume</div>
-        <div class="kpi-value" id="cv-kpi-vol">$0.00</div>
-        <div class="kpi-sub" id="cv-kpi-vol-sub">Processed</div>
-      </div>
-      <div class="kpi-card" style="border-top-color: var(--accent-success);">
-        <div class="kpi-title">Active Suppliers</div>
-        <div class="kpi-value" id="cv-kpi-sup">0</div>
-        <div class="kpi-sub" id="cv-kpi-sup-sub">In Network</div>
-      </div>
-      <div class="kpi-card" style="border-top-color: var(--text-lighter);">
-        <div class="kpi-title">Avg. Payment</div>
-        <div class="kpi-value" id="cv-kpi-avg">$0.00</div>
-        <div class="kpi-sub" id="cv-kpi-avg-sub">Per transaction</div>
-      </div>
-      <div class="kpi-card" style="border-top-color: var(--accent-danger);">
-        <div class="kpi-title">30-Day Refunds</div>
-        <div class="kpi-value" id="cv-kpi-ref" style="color: var(--accent-danger);">$0.00</div>
-        <div class="kpi-sub" id="cv-kpi-ref-sub">Capital returned</div>
-      </div>
-    </div>
-
-    <div class="analysis-row">
-      <div class="analysis-card">
-        <div class="chart-header">
-          Payment Method Breakdown
-          <span class="chart-header-sub">All Time Volume</span>
-        </div>
-        <div class="chart-container">
-          <canvas id="cv-method-mix"></canvas>
-        </div>
-      </div>
-      <div class="analysis-card">
-        <div class="chart-header">
-          Top 10 Buyers
-          <span class="chart-header-sub">By Volume</span>
-        </div>
-        <div class="chart-container">
-          <canvas id="cv-top-buyers"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <div class="analysis-row full">
-      <div class="analysis-card">
-        <div class="chart-header">
-          Monthly Volume Trend
-          <span class="chart-header-sub">Trailing 13 Months</span>
-        </div>
-        <div class="chart-container">
-          <canvas id="cv-monthly-vol"></canvas>
-        </div>
-      </div>
-    </div>
-
-  </main>
-
-  <!-- CBM INSIGHTS TAB -->
-  <main id="cbm-insights" class="dashboard-container">
-    
-    <div class="kpi-grid">
-      <div class="kpi-card" style="border-top-color: var(--accent-warning);">
-        <div class="kpi-title">Avg. Payment Age</div>
-        <div class="kpi-value" id="cbm-kpi-age">0.0d</div>
-        <div class="kpi-sub">Velocity metric</div>
-      </div>
-      <div class="kpi-card" style="border-top-color: var(--accent-success);">
-        <div class="kpi-title">Settlement Rate</div>
-        <div class="kpi-value" id="cbm-kpi-settled">0.0%</div>
-        <div class="kpi-sub">Conversion efficiency</div>
-      </div>
-      <div class="kpi-card" style="border-top-color: var(--accent-danger);">
-        <div class="kpi-title">Exception Rate</div>
-        <div class="kpi-value" id="cbm-kpi-exc" style="color: var(--accent-danger);">0.0%</div>
-        <div class="kpi-sub">Operational friction</div>
-      </div>
-      <div class="kpi-card" style="border-top-color: var(--accent-primary);">
-        <div class="kpi-title">Payments In Flight</div>
-        <div class="kpi-value" id="cbm-kpi-flight">0</div>
-        <div class="kpi-sub">Unsettled float</div>
-      </div>
-    </div>
-
-    <div class="analysis-row">
-      <div class="analysis-card">
-        <div class="chart-header">
-          Payment Aging Distribution
-          <span class="chart-header-sub">Unsettled Volume by Bucket</span>
-        </div>
-        <div class="chart-container">
-          <canvas id="cbm-aging"></canvas>
-        </div>
-      </div>
-      <div class="analysis-card">
-        <div class="chart-header">
-          Exception Trend
-          <span class="chart-header-sub">Trailing 12 Months</span>
-        </div>
-        <div class="chart-container">
-          <canvas id="cbm-exception-trend"></canvas>
-        </div>
-      </div>
-    </div>
-    
-    <div class="analysis-row">
-      <div class="analysis-card">
-        <div class="chart-header">
-          Refunds by Reason
-          <span class="chart-header-sub">All Time</span>
-        </div>
-        <div class="chart-container">
-          <canvas id="cbm-refund-reason"></canvas>
-        </div>
-      </div>
-      <div class="analysis-card">
-        <div class="chart-header">
-          Refund Ratio Trend
-          <span class="chart-header-sub">Refunds vs Total Payments</span>
-        </div>
-        <div class="chart-container">
-          <canvas id="cbm-refund-ratio"></canvas>
-        </div>
-      </div>
-    </div>
-
-  </main>
-
-  <!-- OPS TAB -->
-  <main id="ops" class="dashboard-container">
-    
-    <div class="kpi-grid">
-      <div class="kpi-card" style="border-top-color: var(--accent-primary);">
-        <div class="kpi-title">Active Processing</div>
-        <div class="kpi-value" id="ops-kpi-proc">0</div>
-        <div class="kpi-sub">Pipeline volume</div>
-      </div>
-      <div class="kpi-card" style="border-top-color: var(--accent-danger);">
-        <div class="kpi-title">Open Exceptions</div>
-        <div class="kpi-value" id="ops-kpi-exc" style="color: var(--accent-danger);">0</div>
-        <div class="kpi-sub">Requires intervention</div>
-      </div>
-      <div class="kpi-card" style="border-top-color: var(--accent-warning);">
-        <div class="kpi-title">Pending Refunds</div>
-        <div class="kpi-value" id="ops-kpi-ref" style="color: var(--accent-warning);">0</div>
-        <div class="kpi-sub">Capital in return transit</div>
-      </div>
-      <div class="kpi-card" style="border-top-color: var(--accent-success);">
-        <div class="kpi-title">Case Resolution Rate</div>
-        <div class="kpi-value" id="ops-kpi-res">0.0%</div>
-        <div class="kpi-sub">Support efficiency</div>
-      </div>
-    </div>
-
-    <div class="analysis-row full">
-      <div class="analysis-card">
-        <div class="chart-header">
-          Delivery Modality Trend
-          <span class="chart-header-sub">Virtual Card vs ACH vs Check</span>
-        </div>
-        <div class="chart-container">
-          <canvas id="ops-modality-trend"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <div class="analysis-row">
-      <div class="analysis-card">
-        <div class="chart-header">
-          Support Case Breakdown
-          <span class="chart-header-sub">By Type</span>
-        </div>
-        <div class="chart-container">
-          <canvas id="ops-case-type"></canvas>
-        </div>
-      </div>
-      <div class="analysis-card">
-        <div class="chart-header">
-          Payment Status Breakdown
-          <span class="chart-header-sub">Current State</span>
-        </div>
-        <div class="chart-container">
-          <canvas id="ops-payment-status"></canvas>
-        </div>
-      </div>
-    </div>
-
-  </main>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
-    // Global formatters
-    const formatCurrency = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact', maximumFractionDigits: 1 }).format(val);
-    const formatNumber = (val) => new Intl.NumberFormat('en-US').format(val);
-    
-    // Stripe-Grade Chart.js Defaults
-    Chart.defaults.color = '#425466'; // Text Muted
-    Chart.defaults.font.family = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
-    Chart.defaults.scale.grid.color = '#E3E8EE'; // Border Soft
-    Chart.defaults.scale.grid.drawBorder = false;
-    Chart.defaults.plugins.tooltip.backgroundColor = '#FFFFFF';
-    Chart.defaults.plugins.tooltip.titleColor = '#0A2540';
-    Chart.defaults.plugins.tooltip.bodyColor = '#425466';
-    Chart.defaults.plugins.tooltip.borderColor = '#E3E8EE';
-    Chart.defaults.plugins.tooltip.borderWidth = 1;
-    Chart.defaults.plugins.tooltip.padding = 12;
-    Chart.defaults.plugins.tooltip.cornerRadius = 4;
-    Chart.defaults.plugins.tooltip.boxPadding = 6;
-    Chart.defaults.plugins.tooltip.titleFont = { size: 13, weight: 'bold' };
-    Chart.defaults.plugins.tooltip.bodyFont = { size: 13 };
-    Chart.defaults.plugins.tooltip.usePointStyle = true;
-
-    // Add a soft drop shadow to tooltips
-    Chart.register({
-      id: 'customTooltipShadow',
-      beforeDraw: chart => {
-        if (chart.tooltip && chart.tooltip.opacity > 0) {
-          const ctx = chart.ctx;
-          ctx.save();
-          ctx.shadowColor = 'rgba(50, 50, 93, 0.1)';
-          ctx.shadowBlur = 10;
-          ctx.shadowOffsetX = 0;
-          ctx.shadowOffsetY = 4;
-        }
-      },
-      afterDraw: chart => {
-        if (chart.tooltip && chart.tooltip.opacity > 0) {
-          chart.ctx.restore();
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            finNavy: '#002B49',
+            finEmerald: '#00D382',
+            finSlate: '#F6F9FC',
+            finText: '#334155',
+            finBorder: '#E2E8F0'
+          },
+          boxShadow: {
+            'pe': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+            'pe-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+          }
         }
       }
-    });
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar for the sidebar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+    
+    .nav-item { transition: all 0.2s ease-in-out; }
+    .nav-item:hover { background-color: #F1F5F9; color: #002B49; }
+    .nav-active { background-color: #E6F8F0; color: #00D382; font-weight: 600; border-right: 3px solid #00D382; }
+    
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body class="bg-finSlate text-finText font-sans antialiased h-screen flex overflow-hidden">
 
+  <!-- Left Rail Sidebar -->
+  <aside class="w-64 bg-white border-r border-finBorder flex flex-col h-full flex-shrink-0 z-10 shadow-sm relative">
+    
+    <!-- Logo Header -->
+    <div class="h-16 flex items-center px-6 border-b border-finBorder">
+      <img src="logo_operator.png" alt="Finexio" class="h-8 object-contain hidden" id="img-operator" />
+      <!-- Fallback SVG if image is missing -->
+      <div class="flex items-center gap-2 font-bold text-finNavy text-xl tracking-tight">
+        <i class="ph-fill ph-target text-finEmerald text-2xl"></i>
+        Finexio <span class="text-finEmerald font-light">Intel</span>
+      </div>
+    </div>
+
+    <!-- Navigation Scroll Area -->
+    <div class="flex-1 overflow-y-auto py-4 px-3 space-y-6">
+      
+      <!-- Operations -->
+      <div>
+        <h3 class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Operations</h3>
+        <ul class="space-y-1">
+          <li><a href="#" class="nav-item nav-active flex items-center gap-3 px-3 py-2 rounded-md text-sm"><i class="ph ph-flow-arrow text-lg"></i> Macro Payment Flow</a></li>
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-waterfall text-lg"></i> CBM Aging Waterfall</a></li>
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-warning-circle text-lg"></i> Exception Pareto</a></li>
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-funnel text-lg"></i> Onboarding Velocity</a></li>
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-activity text-lg"></i> Platform SLA</a></li>
+        </ul>
+      </div>
+
+      <!-- Sales -->
+      <div>
+        <h3 class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Sales</h3>
+        <ul class="space-y-1">
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-trend-up text-lg"></i> Pipeline Velocity</a></li>
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-squares-four text-lg"></i> Win/Loss 2x2</a></li>
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-handshake text-lg"></i> Partner Yield</a></li>
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-crosshair text-lg"></i> Rep Execution</a></li>
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-chart-line-up text-lg"></i> Forecast vs Actuals</a></li>
+        </ul>
+      </div>
+
+      <!-- Marketing -->
+      <div>
+        <h3 class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Marketing</h3>
+        <ul class="space-y-1">
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-currency-dollar text-lg"></i> CAC to LTV Ratio</a></li>
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-git-merge text-lg"></i> Multi-Touch Attr.</a></li>
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-megaphone text-lg"></i> Campaign ROI 2x2</a></li>
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-buildings text-lg"></i> ABM Penetration</a></li>
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-cursor-click text-lg"></i> Digital Journey</a></li>
+        </ul>
+      </div>
+
+      <!-- Customer Value -->
+      <div>
+        <h3 class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Customer Value</h3>
+        <ul class="space-y-1">
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-credit-card text-lg"></i> V-Card Propensity</a></li>
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-chart-polar text-lg"></i> Wallet Share Lorenz</a></li>
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-chart-bar text-lg"></i> NRR Waterfall</a></li>
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-arrows-left-right text-lg"></i> Modality Migration</a></li>
+          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-piggy-bank text-lg"></i> Buyer ROI / Rebates</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- User Footer -->
+    <div class="p-4 border-t border-finBorder flex items-center gap-3">
+      <div class="h-8 w-8 rounded-full bg-finNavy text-white flex items-center justify-center font-bold text-xs">CW</div>
+      <div class="text-sm">
+        <div class="font-semibold text-finNavy">Chris Wyatt</div>
+        <div class="text-xs text-gray-500">Executive Viewer</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+    
+    <!-- Top Header -->
+    <header class="h-16 bg-white border-b border-finBorder flex items-center justify-between px-8 shadow-sm z-10">
+      <div class="flex items-center gap-4">
+        <h1 class="text-xl font-bold text-finNavy tracking-tight">Macro Payment Flow</h1>
+        <span class="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold border border-blue-100">Operations</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-sm text-gray-500 flex items-center gap-1">
+          <i class="ph ph-clock"></i> Live Data via BigQuery
+        </div>
+        <button class="bg-finNavy hover:bg-finEmerald text-white px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm flex items-center gap-2">
+          <i class="ph ph-download-simple"></i> Export Deck
+        </button>
+      </div>
+    </header>
+
+    <!-- Scrollable Dashboard Content -->
+    <div class="flex-1 overflow-y-auto p-8">
+      
+      <!-- Top KPIs -->
+      <div class="grid grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl p-5 border border-finBorder shadow-pe hover:shadow-pe-hover transition-shadow">
+          <div class="flex justify-between items-start mb-2">
+            <h4 class="text-sm font-semibold text-gray-500">Total Volume Flow</h4>
+            <div class="p-1.5 bg-green-50 rounded-md text-finEmerald"><i class="ph ph-money text-lg"></i></div>
+          </div>
+          <div class="text-2xl font-bold text-finNavy">$1.42B</div>
+          <div class="text-xs text-green-600 flex items-center gap-1 mt-1 font-medium"><i class="ph-bold ph-trend-up"></i> +4.2% MoM</div>
+        </div>
+        
+        <div class="bg-white rounded-xl p-5 border border-finBorder shadow-pe hover:shadow-pe-hover transition-shadow">
+          <div class="flex justify-between items-start mb-2">
+            <h4 class="text-sm font-semibold text-gray-500">Avg Settlement Time</h4>
+            <div class="p-1.5 bg-blue-50 rounded-md text-blue-500"><i class="ph ph-hourglass text-lg"></i></div>
+          </div>
+          <div class="text-2xl font-bold text-finNavy">2.4 Days</div>
+          <div class="text-xs text-green-600 flex items-center gap-1 mt-1 font-medium"><i class="ph-bold ph-trend-down"></i> -0.3 Days MoM</div>
+        </div>
+
+        <div class="bg-white rounded-xl p-5 border border-finBorder shadow-pe hover:shadow-pe-hover transition-shadow">
+          <div class="flex justify-between items-start mb-2">
+            <h4 class="text-sm font-semibold text-gray-500">Exception Rate</h4>
+            <div class="p-1.5 bg-red-50 rounded-md text-red-500"><i class="ph ph-warning-octagon text-lg"></i></div>
+          </div>
+          <div class="text-2xl font-bold text-finNavy">1.8%</div>
+          <div class="text-xs text-red-600 flex items-center gap-1 mt-1 font-medium"><i class="ph-bold ph-trend-up"></i> +0.2% MoM</div>
+        </div>
+
+        <div class="bg-white rounded-xl p-5 border border-finBorder shadow-pe hover:shadow-pe-hover transition-shadow">
+          <div class="flex justify-between items-start mb-2">
+            <h4 class="text-sm font-semibold text-gray-500">Float Capital</h4>
+            <div class="p-1.5 bg-purple-50 rounded-md text-purple-500"><i class="ph ph-bank text-lg"></i></div>
+          </div>
+          <div class="text-2xl font-bold text-finNavy">$42.5M</div>
+          <div class="text-xs text-gray-500 flex items-center gap-1 mt-1 font-medium"><i class="ph-bold ph-minus"></i> Stable</div>
+        </div>
+      </div>
+
+      <!-- Main Analytical Block: Viz + "So What?" -->
+      <div class="grid grid-cols-3 gap-6 mb-8">
+        
+        <!-- Interactive Visualization Area -->
+        <div class="col-span-2 bg-white rounded-xl border border-finBorder shadow-pe overflow-hidden flex flex-col">
+          <div class="p-5 border-b border-finBorder flex justify-between items-center bg-gray-50/50">
+            <h2 class="text-lg font-bold text-finNavy">Capital Routing Architecture</h2>
+            <div class="flex gap-2">
+              <button class="px-3 py-1 text-xs font-semibold bg-white border border-gray-200 rounded text-gray-600 hover:bg-gray-50 shadow-sm">MTD</button>
+              <button class="px-3 py-1 text-xs font-semibold bg-finNavy border border-finNavy rounded text-white shadow-sm">YTD</button>
+            </div>
+          </div>
+          <div class="p-6 flex-1 relative min-h-[400px]">
+            <!-- Chart Container -->
+            <canvas id="mainChart"></canvas>
+            
+            <!-- Floating interactive tooltip mockup -->
+            <div class="absolute top-1/4 left-1/3 glass-card p-3 rounded-lg shadow-lg text-sm hidden" id="hover-card">
+              <div class="font-bold text-finNavy border-b border-gray-100 pb-1 mb-1">Check Processing</div>
+              <div class="flex justify-between gap-4"><span class="text-gray-500">Volume:</span> <span class="font-semibold">$450M</span></div>
+              <div class="flex justify-between gap-4"><span class="text-gray-500">Exceptions:</span> <span class="font-semibold text-red-500">4.2%</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- "So What?" Strategic Narrative Block -->
+        <div class="col-span-1 bg-finNavy rounded-xl border border-finNavy shadow-pe text-white p-6 flex flex-col relative overflow-hidden">
+          <!-- Subtle background accent -->
+          <div class="absolute -right-12 -top-12 w-32 h-32 bg-finEmerald rounded-full opacity-20 blur-2xl"></div>
+          
+          <div class="flex items-center gap-2 mb-4 text-finEmerald font-bold tracking-wide text-xs uppercase">
+            <i class="ph-fill ph-lightbulb"></i> Strategic Takeaway
+          </div>
+          
+          <h3 class="text-2xl font-bold mb-4 leading-tight">Physical checks are driving 72% of all payment friction.</h3>
+          
+          <div class="space-y-4 text-sm text-blue-100 font-light flex-1">
+            <p>
+              While Virtual Cards represent the largest volume share ($820M), <strong class="text-white font-semibold">Check-By-Mail ($450M) accounts for the vast majority of exceptions and SLA breaches.</strong>
+            </p>
+            <p>
+              The float drag on checks currently averages 12.4 days from issue to clear, locking up approximately <strong class="text-white font-semibold">$15M in unoptimized capital</strong> daily. 
+            </p>
+            <div class="p-3 bg-white/10 rounded-lg border border-white/20 mt-4 backdrop-blur-sm">
+              <div class="text-xs uppercase text-gray-300 font-semibold mb-1">Executive Action</div>
+              <p class="font-medium text-white">Target the top 200 suppliers currently receiving Checks > $50k for an immediate Virtual Card enablement sprint.</p>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Interactive Scripting -->
+  <script>
+    // Initialize a sophisticated looking chart (Bar representing flow stages as a proxy for Sankey)
+    const ctx = document.getElementById('mainChart').getContext('2d');
+    
+    // Finexio PE Palette
     const colors = {
-      blurple: '#635BFF',
-      emerald: '#0ebd7d',
-      sapphire: '#0073e6',
-      amber: '#f5a623',
-      slate: '#425466',
-      slateBorder: '#E3E8EE',
-      red: '#df1b41',
-      indigo: '#4F46E5',
-      sky: '#0EA5E9',
-      purple: '#8B5CF6'
+      vcard: '#00D382', // Emerald
+      ach: '#002B49',   // Navy
+      check: '#94A3B8', // Slate
+      wire: '#F59E0B'   // Gold
     };
-    
-    const chartPalette = [colors.blurple, colors.emerald, colors.amber, colors.red, colors.sky, colors.purple];
-    
-    let chartInstances = {};
 
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.dashboard-container').forEach(container => container.classList.remove('active'));
-      
-      document.querySelector(`button[onclick="switchTab('${tabId}')"]`).classList.add('active');
-      document.getElementById(tabId).classList.add('active');
-      
-      // Update charts to fix sizing
-      Object.values(chartInstances).forEach(chart => {
-        if(chart) chart.update();
-      });
-    }
-
-    function initCustomerValue() {
-      if (!window.CUSTOMER_VALUE_DATA) return;
-      const data = window.CUSTOMER_VALUE_DATA;
-      
-      // Update KPIs
-      document.getElementById('cv-kpi-vol').textContent = formatCurrency(data.kpis.total_payment_volume);
-      document.getElementById('cv-kpi-vol-sub').textContent = `${formatNumber(data.kpis.total_payments)} total payments`;
-      document.getElementById('cv-kpi-sup').textContent = formatNumber(data.kpis.active_suppliers);
-      document.getElementById('cv-kpi-avg').textContent = formatCurrency(data.kpis.avg_payment);
-      document.getElementById('cv-kpi-ref').textContent = formatCurrency(data.kpis.refund_amount);
-
-      // Method Mix (Doughnut)
-      const validMix = data.paymentMethodMix.filter(m => m.amount > 0);
-      const ctxMethod = document.getElementById('cv-method-mix');
-      chartInstances.cvMethod = new Chart(ctxMethod, {
-        type: 'doughnut',
-        data: {
-          labels: validMix.map(m => m.method),
-          datasets: [{
-            data: validMix.map(m => m.amount),
-            backgroundColor: chartPalette,
-            borderWidth: 2,
-            borderColor: '#FFFFFF',
-            hoverOffset: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8 } },
-            tooltip: { callbacks: { label: ctx => ` ${formatCurrency(ctx.raw)}` } }
-          },
-          cutout: '70%'
-        }
-      });
-
-      // Top Buyers (Bar)
-      const topBuyers = data.topBuyers;
-      const ctxBuyers = document.getElementById('cv-top-buyers');
-      chartInstances.cvBuyers = new Chart(ctxBuyers, {
-        type: 'bar',
-        data: {
-          labels: topBuyers.map(b => b.buyer_name.substring(0, 15) + '...'),
-          datasets: [{
-            label: 'Volume ($)',
-            data: topBuyers.map(b => b.amount),
-            backgroundColor: colors.sapphire,
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Initiated', 'Processed', 'Cleared', 'Exceptions'],
+        datasets: [
+          {
+            label: 'Virtual Card',
+            data: [820, 815, 810, 5],
+            backgroundColor: colors.vcard,
             borderRadius: 4,
-            barPercentage: 0.6
-          }]
-        },
-        options: {
-          indexAxis: 'y', // Horizontal bar chart
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: { beginAtZero: true, grid: { color: colors.slateBorder, drawTicks: false }, ticks: { callback: val => formatCurrency(val) } },
-            y: { grid: { display: false } }
           },
-          plugins: { legend: { display: false } }
-        }
-      });
-
-      // Monthly Volume (Bar)
-      const mVol = [...data.monthlyVolume].reverse();
-      const ctxMonthly = document.getElementById('cv-monthly-vol');
-      chartInstances.cvMonthly = new Chart(ctxMonthly, {
-        type: 'bar',
-        data: {
-          labels: mVol.map(m => m.month),
-          datasets: [
-            {
-              label: 'Virtual Card',
-              data: mVol.map(m => m.vc_amount),
-              backgroundColor: colors.blurple,
-              stack: 'Stack 0',
-              borderRadius: 4
-            },
-            {
-              label: 'ACH',
-              data: mVol.map(m => m.ach_amount),
-              backgroundColor: colors.emerald,
-              stack: 'Stack 0',
-              borderRadius: 4
-            },
-            {
-              label: 'Check',
-              data: mVol.map(m => m.check_amount),
-              backgroundColor: colors.slate,
-              stack: 'Stack 0',
-              borderRadius: 4
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: { grid: { display: false }, stacked: true },
-            y: { stacked: true, grid: { color: colors.slateBorder, drawTicks: false }, ticks: { callback: val => formatCurrency(val) } }
-          },
-          plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } } },
-          interaction: { mode: 'index', intersect: false }
-        }
-      });
-    }
-
-    function initCBMInsights() {
-      if (!window.CBM_INSIGHTS_DATA) return;
-      const data = window.CBM_INSIGHTS_DATA;
-      
-      // Update KPIs
-      document.getElementById('cbm-kpi-age').textContent = (data.kpis.avg_payment_age || 0).toFixed(1) + 'd';
-      document.getElementById('cbm-kpi-settled').textContent = (data.kpis.pct_settled || 0).toFixed(1) + '%';
-      document.getElementById('cbm-kpi-exc').textContent = (data.kpis.exception_rate || 0).toFixed(2) + '%';
-      document.getElementById('cbm-kpi-flight').textContent = formatNumber(data.kpis.payments_in_flight);
-
-      // Aging Distribution
-      const ctxAging = document.getElementById('cbm-aging');
-      chartInstances.cbmAging = new Chart(ctxAging, {
-        type: 'bar',
-        data: {
-          labels: data.ageDistribution.map(d => d.bucket),
-          datasets: [{
-            label: 'Volume ($)',
-            data: data.ageDistribution.map(d => d.amount),
-            backgroundColor: data.ageDistribution.map(d => 
-              d.bucket.includes('30+') || d.bucket.includes('14-30') ? colors.red : colors.emerald
-            ),
+          {
+            label: 'ACH',
+            data: [600, 590, 580, 10],
+            backgroundColor: colors.ach,
             borderRadius: 4,
-            barPercentage: 0.6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: { beginAtZero: true, grid: { color: colors.slateBorder, drawTicks: false }, ticks: { callback: val => formatCurrency(val) } },
-            x: { grid: { display: false } }
           },
-          plugins: { legend: { display: false } }
-        }
-      });
-
-      // Exception Trend
-      const eTrend = [...data.exceptionTrend].reverse();
-      const ctxExc = document.getElementById('cbm-exception-trend');
-      chartInstances.cbmExc = new Chart(ctxExc, {
-        type: 'line',
-        data: {
-          labels: eTrend.map(d => d.month),
-          datasets: [{
-            label: 'Exception Rate (%)',
-            data: eTrend.map(d => d.rate),
-            borderColor: colors.red,
-            backgroundColor: 'rgba(223, 27, 65, 0.1)',
-            borderWidth: 3,
-            fill: true,
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: colors.red
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: { beginAtZero: true, grid: { color: colors.slateBorder, drawTicks: false } },
-            x: { grid: { display: false } }
-          },
-          plugins: { legend: { display: false } }
-        }
-      });
-      
-      // Refund by Reason
-      const rReason = data.refundAnalysis.by_reason.slice(0, 7);
-      const ctxReason = document.getElementById('cbm-refund-reason');
-      chartInstances.cbmReason = new Chart(ctxReason, {
-        type: 'bar',
-        data: {
-          labels: rReason.map(r => r.reason.length > 20 ? r.reason.substring(0, 20) + '...' : r.reason),
-          datasets: [{
-            label: 'Refund Volume ($)',
-            data: rReason.map(r => r.amount),
-            backgroundColor: colors.amber,
-            borderRadius: 4
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: { beginAtZero: true, grid: { color: colors.slateBorder, drawTicks: false }, ticks: { callback: val => formatCurrency(val) } },
-            y: { grid: { display: false } }
-          },
-          plugins: { legend: { display: false } }
-        }
-      });
-      
-      // Refund Ratio Trend
-      const rRatio = [...data.refundAnalysis.monthly_ratio].reverse();
-      const ctxRatio = document.getElementById('cbm-refund-ratio');
-      chartInstances.cbmRatio = new Chart(ctxRatio, {
-        type: 'line',
-        data: {
-          labels: rRatio.map(r => r.month),
-          datasets: [{
-            label: 'Refund Ratio (%)',
-            data: rRatio.map(r => r.ratio),
-            borderColor: colors.amber,
-            backgroundColor: 'rgba(245, 166, 35, 0.1)',
-            borderWidth: 3,
-            fill: true,
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: colors.amber
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: { beginAtZero: true, grid: { color: colors.slateBorder, drawTicks: false } },
-            x: { grid: { display: false } }
-          },
-          plugins: { legend: { display: false } }
-        }
-      });
-    }
-
-    function initOps() {
-      if (!window.OPS_DATA) return;
-      const data = window.OPS_DATA;
-      
-      // Update KPIs
-      document.getElementById('ops-kpi-proc').textContent = formatNumber(data.kpis.payments_processing);
-      document.getElementById('ops-kpi-exc').textContent = formatNumber(data.kpis.exceptions_open);
-      document.getElementById('ops-kpi-ref').textContent = formatNumber(data.kpis.refunds_pending);
-      document.getElementById('ops-kpi-res').textContent = (data.kpis.case_resolution_rate || 0).toFixed(1) + '%';
-
-      // Delivery Modality Trend (Line Chart)
-      const trendData = data.deliveryMethodTrend.slice().reverse();
-      const ctxTrend = document.getElementById('ops-modality-trend');
-      
-      chartInstances.opsTrend = new Chart(ctxTrend, {
-        type: 'line',
-        data: {
-          labels: trendData.map(d => d.month),
-          datasets: [
-            {
-              label: 'Virtual Card',
-              data: trendData.map(d => d.virtual_card),
-              borderColor: colors.blurple,
-              backgroundColor: 'transparent',
-              borderWidth: 3,
-              tension: 0.3,
-              pointRadius: 4,
-              pointBackgroundColor: colors.blurple
-            },
-            {
-              label: 'ACH',
-              data: trendData.map(d => d.ach),
-              borderColor: colors.emerald,
-              backgroundColor: 'transparent',
-              borderWidth: 3,
-              tension: 0.3,
-              pointRadius: 4,
-              pointBackgroundColor: colors.emerald
-            },
-            {
-              label: 'Check',
-              data: trendData.map(d => d.check),
-              borderColor: colors.slate,
-              backgroundColor: 'transparent',
-              borderWidth: 2,
-              borderDash: [5, 5],
-              tension: 0.3,
-              pointRadius: 3,
-              pointBackgroundColor: colors.slate
+          {
+            label: 'Check',
+            data: [450, 430, 390, 60],
+            backgroundColor: colors.check,
+            borderRadius: 4,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { family: 'Inter', weight: '500' } } },
+          tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            titleColor: '#002B49',
+            bodyColor: '#334155',
+            borderColor: '#E2E8F0',
+            borderWidth: 1,
+            padding: 12,
+            boxPadding: 6,
+            usePointStyle: true,
+            titleFont: { family: 'Inter', size: 14, weight: 'bold' },
+            bodyFont: { family: 'Inter', size: 13 },
+            callbacks: {
+              label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) { label += ': '; }
+                if (context.parsed.y !== null) { label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumSignificantDigits: 3 }).format(context.parsed.y) + 'M'; }
+                return label;
+              }
             }
-          ]
+          }
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: { beginAtZero: true, grid: { color: colors.slateBorder, drawTicks: false }, ticks: { callback: val => formatNumber(val) } },
-            x: { grid: { display: false } }
-          },
-          plugins: { legend: { position: 'top', labels: { color: colors.text_dark, usePointStyle: true, boxWidth: 8 } } },
-          interaction: { mode: 'index', intersect: false }
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { font: { family: 'Inter', weight: '600' }, color: '#64748B' } },
+          y: { 
+            stacked: true, 
+            border: { display: false },
+            grid: { color: '#F1F5F9', drawTicks: false },
+            ticks: {
+              font: { family: 'Inter' },
+              color: '#94A3B8',
+              callback: function(value) { return '$' + value + 'M'; }
+            }
+          }
         }
-      });
-      
-      // Case Type (Doughnut)
-      const ctxCase = document.getElementById('ops-case-type');
-      chartInstances.opsCase = new Chart(ctxCase, {
-        type: 'doughnut',
-        data: {
-          labels: data.caseBreakdown.by_type.map(c => c.type),
-          datasets: [{
-            data: data.caseBreakdown.by_type.map(c => c.count),
-            backgroundColor: chartPalette,
-            borderWidth: 2,
-            borderColor: '#FFFFFF',
-            hoverOffset: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8 } }
-          },
-          cutout: '70%'
-        }
-      });
-      
-      // Payment Status (Bar)
-      const ctxStatus = document.getElementById('ops-payment-status');
-      chartInstances.opsStatus = new Chart(ctxStatus, {
-        type: 'bar',
-        data: {
-          labels: data.paymentStatus.map(s => s.status),
-          datasets: [{
-            label: 'Payment Count',
-            data: data.paymentStatus.map(s => s.count),
-            backgroundColor: colors.sapphire,
-            borderRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: { type: 'logarithmic', grid: { color: colors.slateBorder, drawTicks: false } },
-            x: { grid: { display: false } }
-          },
-          plugins: { legend: { display: false } }
-        }
-      });
-    }
-
-    // Initialize all tabs silently, but only one is active
-    document.addEventListener('DOMContentLoaded', () => {
-      initCustomerValue();
-      initCBMInsights();
-      initOps();
+      }
     });
   </script>
 </body>
