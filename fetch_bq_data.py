@@ -180,6 +180,24 @@ ORDER BY total_volume DESC
 LIMIT 500
 """,
 
+    
+    "supplierPropensity": f"""
+SELECT
+    s.db_supplier_name AS supplier_name,
+    COUNT(p.payment_id) AS frequency,
+    AVG(p.payment_amount) AS avg_size,
+    SUM(p.payment_amount) AS total_volume,
+    MAX(s.combined_payment_method) AS method
+FROM {tbl('pbi_dim_supplier')} s
+JOIN {tbl('pbi_star_payment_fact')} p
+  ON s.db_supplier_uuid = p.payment_supplier_id
+WHERE LOWER(s.combined_payment_method) IN ('check', 'ach')
+GROUP BY s.db_supplier_name
+HAVING total_volume > 1000 AND frequency > 1
+ORDER BY total_volume DESC
+LIMIT 500
+""",
+
     "supplierMethodBreakdown": f"""
 SELECT
     combined_payment_method                         AS method,

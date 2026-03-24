@@ -1,4 +1,4 @@
-// Auto-generated 2026-03-24 19:34:14 UTC
+// Auto-generated 2026-03-24 20:12:48 UTC
 var CUSTOMER_VALUE_DATA = {
   "supplierPropensity": [
     {
@@ -3506,7 +3506,7 @@ var CUSTOMER_VALUE_DATA = {
     "total_payment_volume": 459846029.15999997,
     "active_suppliers": 177768,
     "total_payments": 67623,
-    "avg_payment": 6800.142394747347,
+    "avg_payment": 6800.142394747346,
     "refund_amount": 3386841.0699999942
   },
   "paymentMethodMix": [
@@ -3787,5 +3787,5 @@ var CUSTOMER_VALUE_DATA = {
       }
     ]
   },
-  "lastUpdated": "2026-03-24T19:34:14.011513+00:00"
+  "lastUpdated": "2026-03-24T20:12:48.744577+00:00"
 };
