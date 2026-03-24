@@ -1,0 +1,16 @@
+{
+  "projectId": "prj_1HSgqlTGkCcrKrlPd8ivjQSlBj3y",
+  "orgId": "team_2I1JYzm4ftSbEn3mC1wSpcCz",
+  "projectName": "dashboard",
+  "settings": {
+    "createdAt": 1774294685862,
+    "framework": null,
+    "devCommand": null,
+    "installCommand": null,
+    "buildCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}
