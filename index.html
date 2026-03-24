@@ -56,6 +56,7 @@
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
   </style>
+  <script src="customer_value_data.js"></script>
 </head>
 <body class="bg-finSlate text-finText font-sans antialiased h-screen flex overflow-hidden">
 
@@ -79,7 +80,7 @@
       <div>
         <h3 class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Operations</h3>
         <ul class="space-y-1">
-          <li><a href="#" class="nav-item nav-active flex items-center gap-3 px-3 py-2 rounded-md text-sm"><i class="ph ph-flow-arrow text-lg"></i> Macro Payment Flow</a></li>
+          <li><a href="#" class="nav-item nav-active flex items-center gap-3 px-3 py-2 rounded-md text-sm"><i class="ph ph-flow-arrow text-lg"></i> Virtual Card Propensity (Monetization Matrix)</a></li>
           <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-waterfall text-lg"></i> CBM Aging Waterfall</a></li>
           <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-warning-circle text-lg"></i> Exception Pareto</a></li>
           <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-funnel text-lg"></i> Onboarding Velocity</a></li>
@@ -140,8 +141,8 @@
     <!-- Top Header -->
     <header class="h-16 bg-white border-b border-finBorder flex items-center justify-between px-8 shadow-sm z-10">
       <div class="flex items-center gap-4">
-        <h1 class="text-xl font-bold text-finNavy tracking-tight">Macro Payment Flow</h1>
-        <span class="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold border border-blue-100">Operations</span>
+        <h1 class="text-xl font-bold text-finNavy tracking-tight">Virtual Card Propensity (Monetization Matrix)</h1>
+        <span class="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold border border-blue-100">Customer Value</span>
       </div>
       <div class="flex items-center gap-4">
         <div class="text-sm text-gray-500 flex items-center gap-1">
@@ -201,7 +202,7 @@
         <!-- Interactive Visualization Area -->
         <div class="col-span-2 bg-white rounded-xl border border-finBorder shadow-pe overflow-hidden flex flex-col">
           <div class="p-5 border-b border-finBorder flex justify-between items-center bg-gray-50/50">
-            <h2 class="text-lg font-bold text-finNavy">Capital Routing Architecture</h2>
+            <h2 class="text-lg font-bold text-finNavy">Monetization Propensity (Frequency vs Avg Size)</h2>
             <div class="flex gap-2">
               <button class="px-3 py-1 text-xs font-semibold bg-white border border-gray-200 rounded text-gray-600 hover:bg-gray-50 shadow-sm">MTD</button>
               <button class="px-3 py-1 text-xs font-semibold bg-finNavy border border-finNavy rounded text-white shadow-sm">YTD</button>
@@ -229,18 +230,18 @@
             <i class="ph-fill ph-lightbulb"></i> Strategic Takeaway
           </div>
           
-          <h3 class="text-2xl font-bold mb-4 leading-tight">Physical checks are driving 72% of all payment friction.</h3>
+          <h3 class="text-2xl font-bold mb-4 leading-tight">High-Frequency, High-Value ACH/Check suppliers present immediate monetization ROI.</h3>
           
           <div class="space-y-4 text-sm text-blue-100 font-light flex-1">
             <p>
-              While Virtual Cards represent the largest volume share ($820M), <strong class="text-white font-semibold">Check-By-Mail ($450M) accounts for the vast majority of exceptions and SLA breaches.</strong>
+              The upper-right quadrant contains suppliers receiving over $5M in combined annual volume via zero-margin legacy rails (Check/ACH) with high transaction frequency.
             </p>
             <p>
-              The float drag on checks currently averages 12.4 days from issue to clear, locking up approximately <strong class="text-white font-semibold">$15M in unoptimized capital</strong> daily. 
+              Converting just the top 10 'Whale' suppliers in this cluster to Virtual Card (assuming standard 1.5% rebate) yields approximately <strong class="text-white font-semibold">$425k in net new annual revenue</strong>. 
             </p>
             <div class="p-3 bg-white/10 rounded-lg border border-white/20 mt-4 backdrop-blur-sm">
               <div class="text-xs uppercase text-gray-300 font-semibold mb-1">Executive Action</div>
-              <p class="font-medium text-white">Target the top 200 suppliers currently receiving Checks > $50k for an immediate Virtual Card enablement sprint.</p>
+              <p class="font-medium text-white">Launch targeted Tier 1 enablement campaigns at the upper-right quadrant. Prioritize Check-receivers over ACH for dual operational & revenue wins.</p>
             </div>
           </div>
         </div>
@@ -252,7 +253,7 @@
 
   <!-- Interactive Scripting -->
   <script>
-    // Initialize a sophisticated looking chart (Bar representing flow stages as a proxy for Sankey)
+    // Load Data from customer_value_data.js
     const ctx = document.getElementById('mainChart').getContext('2d');
     
     // Finexio PE Palette
@@ -263,35 +264,49 @@
       wire: '#F59E0B'   // Gold
     };
 
+    // Prepare Bubble Data
+    const rawData = typeof CUSTOMER_VALUE_DATA !== 'undefined' ? (CUSTOMER_VALUE_DATA.supplierPropensity || []) : [];
+    
+    const achData = [];
+    const checkData = [];
+    
+    // Process top 100 for visual clarity
+    rawData.slice(0, 100).forEach(d => {
+      const bubble = {
+        x: d.frequency,
+        y: d.avg_size,
+        r: Math.max(5, Math.min(30, Math.sqrt(d.total_volume) / 500)), // Volume scales radius
+        supplier_name: d.supplier_name,
+        total_volume: d.total_volume,
+        method: d.method
+      };
+      if (d.method === 'ACH') achData.push(bubble);
+      if (d.method === 'Check') checkData.push(bubble);
+    });
+
     new Chart(ctx, {
-      type: 'bar',
+      type: 'bubble',
       data: {
-        labels: ['Initiated', 'Processed', 'Cleared', 'Exceptions'],
         datasets: [
           {
-            label: 'Virtual Card',
-            data: [820, 815, 810, 5],
-            backgroundColor: colors.vcard,
-            borderRadius: 4,
+            label: 'ACH Suppliers',
+            data: achData,
+            backgroundColor: 'rgba(0, 43, 73, 0.7)', // Navy
+            borderColor: colors.ach,
+            borderWidth: 1
           },
           {
-            label: 'ACH',
-            data: [600, 590, 580, 10],
-            backgroundColor: colors.ach,
-            borderRadius: 4,
-          },
-          {
-            label: 'Check',
-            data: [450, 430, 390, 60],
-            backgroundColor: colors.check,
-            borderRadius: 4,
+            label: 'Check Suppliers',
+            data: checkData,
+            backgroundColor: 'rgba(148, 163, 184, 0.7)', // Slate
+            borderColor: colors.check,
+            borderWidth: 1
           }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
         plugins: {
           legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { family: 'Inter', weight: '500' } } },
           tooltip: {
@@ -302,30 +317,35 @@
             borderWidth: 1,
             padding: 12,
             boxPadding: 6,
-            usePointStyle: true,
             titleFont: { family: 'Inter', size: 14, weight: 'bold' },
             bodyFont: { family: 'Inter', size: 13 },
             callbacks: {
+              title: function(context) {
+                return context[0].raw.supplier_name;
+              },
               label: function(context) {
-                let label = context.dataset.label || '';
-                if (label) { label += ': '; }
-                if (context.parsed.y !== null) { label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumSignificantDigits: 3 }).format(context.parsed.y) + 'M'; }
-                return label;
+                const d = context.raw;
+                return [
+                  `Method: ${d.method}`,
+                  `Total Volume: $${(d.total_volume / 1000000).toFixed(2)}M`,
+                  `Avg Size: $${d.y.toLocaleString(undefined, {maximumFractionDigits:0})}`,
+                  `Frequency: ${d.x}`
+                ];
               }
             }
           }
         },
         scales: {
-          x: { stacked: true, grid: { display: false }, ticks: { font: { family: 'Inter', weight: '600' }, color: '#64748B' } },
+          x: { 
+            type: 'logarithmic',
+            title: { display: true, text: 'Transaction Frequency (Log)', font: { family: 'Inter', weight: '600' } },
+            grid: { color: '#F1F5F9', drawTicks: false }
+          },
           y: { 
-            stacked: true, 
-            border: { display: false },
+            type: 'logarithmic',
+            title: { display: true, text: 'Average Transaction Size (Log)', font: { family: 'Inter', weight: '600' } },
             grid: { color: '#F1F5F9', drawTicks: false },
-            ticks: {
-              font: { family: 'Inter' },
-              color: '#94A3B8',
-              callback: function(value) { return '$' + value + 'M'; }
-            }
+            ticks: { callback: function(value) { return '$' + value; } }
           }
         }
       }
