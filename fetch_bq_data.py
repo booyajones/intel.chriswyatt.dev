@@ -162,6 +162,24 @@ ORDER BY count DESC
 LIMIT 10
 """,
 
+    
+    "supplierPropensity": f"""
+SELECT
+    s.db_supplier_name AS supplier_name,
+    COUNT(p.payment_id) AS frequency,
+    AVG(p.payment_amount) AS avg_size,
+    SUM(p.payment_amount) AS total_volume,
+    MAX(s.combined_payment_method) AS method
+FROM {tbl('pbi_dim_supplier')} s
+JOIN {tbl('pbi_star_payment_fact')} p
+  ON s.db_supplier_uuid = p.payment_supplier_id
+WHERE LOWER(s.combined_payment_method) IN ('check', 'ach')
+GROUP BY s.db_supplier_name
+HAVING total_volume > 1000 AND frequency > 1
+ORDER BY total_volume DESC
+LIMIT 500
+""",
+
     "supplierMethodBreakdown": f"""
 SELECT
     combined_payment_method                         AS method,
@@ -237,7 +255,22 @@ def build_customer_value(client, dry_run=False):
         ],
     }
 
+    
+    print("  Querying supplier propensity...")
+    propensity_rows = run_query(client, CUSTOMER_VALUE_QUERIES["supplierPropensity"], dry_run) or []
+    supplier_propensity = [
+        {
+            "supplier_name": r.get("supplier_name"),
+            "frequency": int(r.get("frequency") or 0),
+            "avg_size": float(r.get("avg_size") or 0),
+            "total_volume": float(r.get("total_volume") or 0),
+            "method": r.get("method")
+        }
+        for r in propensity_rows
+    ]
+
     return {
+        "supplierPropensity": supplier_propensity,
         "kpis":              kpis,
         "paymentMethodMix":  payment_method_mix,
         "monthlyVolume":     monthly_volume,
@@ -459,7 +492,22 @@ def build_cbm_insights(client, dry_run=False):
         ],
     }
 
+    
+    print("  Querying supplier propensity...")
+    propensity_rows = run_query(client, CUSTOMER_VALUE_QUERIES["supplierPropensity"], dry_run) or []
+    supplier_propensity = [
+        {
+            "supplier_name": r.get("supplier_name"),
+            "frequency": int(r.get("frequency") or 0),
+            "avg_size": float(r.get("avg_size") or 0),
+            "total_volume": float(r.get("total_volume") or 0),
+            "method": r.get("method")
+        }
+        for r in propensity_rows
+    ]
+
     return {
+        "supplierPropensity": supplier_propensity,
         "kpis":            kpis,
         "ageDistribution": age_distribution,
         "eventStageFunnel": event_stage_funnel,
@@ -720,7 +768,22 @@ def build_ops(client, dry_run=False):
         "avg_amount":    float(check_row.get("avg_amount") or 0),
     }
 
+    
+    print("  Querying supplier propensity...")
+    propensity_rows = run_query(client, CUSTOMER_VALUE_QUERIES["supplierPropensity"], dry_run) or []
+    supplier_propensity = [
+        {
+            "supplier_name": r.get("supplier_name"),
+            "frequency": int(r.get("frequency") or 0),
+            "avg_size": float(r.get("avg_size") or 0),
+            "total_volume": float(r.get("total_volume") or 0),
+            "method": r.get("method")
+        }
+        for r in propensity_rows
+    ]
+
     return {
+        "supplierPropensity": supplier_propensity,
         "kpis":                 kpis,
         "paymentStatus":        payment_status,
         "deliveryMethodTrend":  delivery_method_trend,
