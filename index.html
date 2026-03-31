@@ -1,480 +1,1141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Finexio Intelligence | Private Equity Dashboard</title>
-  
-  <!-- Fonts: Inter -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finexio Operations Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Icons: Phosphor Icons -->
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', 'sans-serif'] },
-          colors: {
-            finNavy: '#002B49',
-            finEmerald: '#00D382',
-            finSlate: '#F6F9FC',
-            finText: '#334155',
-            finBorder: '#E2E8F0'
-          },
-          boxShadow: {
-            'pe': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
-            'pe-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
-          }
-        }
-      }
-    }
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    /* Custom Scrollbar for the sidebar */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
-    
-    .nav-item { transition: all 0.2s ease-in-out; }
-    .nav-item:hover { background-color: #F1F5F9; color: #002B49; }
-    .nav-active { background-color: #E6F8F0; color: #00D382; font-weight: 600; border-right: 3px solid #00D382; }
-    
-    .glass-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+    :root {
+      --bg: #F6F9FC;
+      --surface: #FFFFFF;
+      --surface-2: #F8FAFC;
+      --navy: #043886;
+      --navy-mid: #0A52C4;
+      --blue: #169ee3;
+      --pale-blue: #adddf5;
+      --blue-light: #E8F4FD;
+      --emerald: #00C48C;
+      --emerald-bg: #EDFAF5;
+      --amber: #F59E0B;
+      --amber-bg: #FFFBEB;
+      --rose: #E53E3E;
+      --rose-bg: #FFF5F5;
+      --text-primary: #0A2540;
+      --text-secondary: #425466;
+      --text-muted: #8898AA;
+      --border: #E3E8EF;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(10,37,64,0.08), 0 1px 3px rgba(10,37,64,0.04);
+      --shadow-lg: 0 8px 24px rgba(10,37,64,0.10), 0 2px 6px rgba(10,37,64,0.06);
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --radius: 10px;
+      --radius-lg: 14px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 14px; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text-primary);
+      min-width: 1280px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-inner {
+      max-width: 1600px; margin: 0 auto; padding: 0 32px;
+      display: flex; align-items: center; gap: 16px; height: 64px;
+    }
+    .logo-mark {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 800; color: #fff; flex-shrink: 0; letter-spacing: -1px;
+    }
+    .header-titles { flex: 1; }
+    .header-title { font-size: 16px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+    .header-subtitle { font-size: 12px; color: var(--text-muted); font-weight: 400; }
+    .header-meta { font-size: 11px; color: var(--text-muted); text-align: right; line-height: 1.6; }
+
+    /* ── Tab Nav ── */
+    .tab-nav {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      position: sticky; top: 64px; z-index: 99;
+    }
+    .tab-nav-inner { max-width: 1600px; margin: 0 auto; padding: 0 32px; display: flex; }
+    .tab-btn {
+      padding: 14px 28px; font-size: 13px; font-weight: 500;
+      color: var(--text-secondary); border: none; background: none;
+      cursor: pointer; border-bottom: 3px solid transparent;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+      font-family: var(--font); white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--navy-mid); background: var(--blue-light); }
+    .tab-btn.active { color: var(--navy); border-bottom-color: var(--navy); font-weight: 600; }
+
+    /* ── Main Layout ── */
+    .main-content { max-width: 1600px; margin: 0 auto; padding: 32px; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md); padding: 24px; border: 1px solid var(--border);
+    }
+    .card-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; }
+    .card-subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 18px; }
+
+    /* ── Watch Items ── */
+    .watch-card { border-left: 4px solid var(--navy); margin-bottom: 24px; }
+    .watch-items-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+    .watch-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 16px; border-radius: var(--radius); font-size: 13px;
+    }
+    .watch-item.warning { background: var(--amber-bg); }
+    .watch-item.critical { background: var(--rose-bg); }
+    .watch-item.ok { background: var(--emerald-bg); }
+    .watch-item-icon { font-size: 15px; line-height: 1.5; flex-shrink: 0; }
+    .watch-item-text { line-height: 1.55; font-weight: 500; color: var(--text-primary); }
+
+    /* ── Migration Card ── */
+    .migration-card { border-left: 4px solid var(--amber); margin-bottom: 24px; }
+
+    /* ── KPI Cards ── */
+    .kpi-row { display: grid; gap: 20px; margin-bottom: 24px; }
+    .kpi-row-4 { grid-template-columns: repeat(4, 1fr); }
+    .kpi-row-3 { grid-template-columns: repeat(3, 1fr); }
+    .kpi-card {
+      background: var(--surface); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md); padding: 22px 24px;
+      border: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px;
+    }
+    .kpi-label {
+      font-size: 11px; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.6px;
+    }
+    .kpi-value { font-size: 30px; font-weight: 800; color: var(--text-primary); line-height: 1.1; }
+    .kpi-value-unit { font-size: 16px; font-weight: 500; color: var(--text-muted); }
+    .kpi-footer { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+    .kpi-hint { font-size: 11px; color: var(--text-muted); }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex; align-items: center;
+      padding: 3px 9px; border-radius: 999px;
+      font-size: 11px; font-weight: 600; white-space: nowrap;
+    }
+    .badge-emerald { background: var(--emerald-bg); color: #00875f; }
+    .badge-amber   { background: var(--amber-bg);   color: #92400e; }
+    .badge-rose    { background: var(--rose-bg);    color: #c53030; }
+    .badge-blue    { background: var(--blue-light); color: var(--navy-mid); }
+    .badge-navy    { background: #E8EDF7; color: var(--navy); }
+
+    /* ── Grids ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+    .mb-24 { margin-bottom: 24px; }
+
+    /* ── Section Headers ── */
+    .section-header { margin-bottom: 16px; }
+    .section-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+    .section-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Chart Containers ── */
+    .chart-wrap { position: relative; width: 100%; }
+    .chart-wrap canvas { display: block; }
+    .chart-sub-title { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; }
+    .chart-divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+
+    /* ── Data Tables ── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table th {
+      text-align: left; padding: 10px 14px;
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+      color: var(--text-muted); border-bottom: 2px solid var(--border); background: var(--surface-2);
+    }
+    .data-table th.r, .data-table td.r { text-align: right; }
+    .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-primary); }
+    .data-table tr:nth-child(even) td { background: var(--surface-2); }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table .total-row td {
+      font-weight: 700; background: var(--amber-bg) !important;
+      border-top: 2px solid var(--amber); color: var(--text-primary);
+    }
+    .row-num { color: var(--text-muted); font-size: 12px; }
+    .interchange-value { color: #00875f; font-weight: 700; }
+
+    /* ── Method Pills ── */
+    .method-pill {
+      display: inline-flex; align-items: center;
+      padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600;
+    }
+    .pill-check { background: var(--amber-bg); color: #92400e; }
+    .pill-ach   { background: var(--blue-light); color: var(--navy); }
+    .pill-card  { background: var(--emerald-bg); color: #00875f; }
+
+    /* ── Concentration ── */
+    .concentration-stat { text-align: center; padding: 16px 0 4px; }
+    .concentration-pct { font-size: 40px; font-weight: 800; color: var(--navy); line-height: 1; }
+    .concentration-label { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+
+    /* ── Footer ── */
+    .page-footer {
+      max-width: 1600px; margin: 0 auto; padding: 16px 32px 40px;
+      text-align: center; font-size: 11px; color: var(--text-muted);
     }
   </style>
-  <script src="customer_value_data.js"></script>
 </head>
-<body class="bg-finSlate text-finText font-sans antialiased h-screen flex overflow-hidden">
+<body>
 
-  <!-- Left Rail Sidebar -->
-  <aside class="w-64 bg-white border-r border-finBorder flex flex-col h-full flex-shrink-0 z-10 shadow-sm relative">
-    
-    <!-- Logo Header -->
-    <div class="h-16 flex items-center px-6 border-b border-finBorder">
-      <img src="logo_operator.png" alt="Finexio" class="h-8 object-contain hidden" id="img-operator" />
-      <!-- Fallback SVG if image is missing -->
-      <div class="flex items-center gap-2 font-bold text-finNavy text-xl tracking-tight">
-        <i class="ph-fill ph-target text-finEmerald text-2xl"></i>
-        Finexio <span class="text-finEmerald font-light">Intel</span>
+<!-- ══════════════ HEADER ══════════════ -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo-mark">F</div>
+    <div class="header-titles">
+      <div class="header-title">Finexio Operations Intelligence</div>
+      <div class="header-subtitle">Executive Dashboard</div>
+    </div>
+    <div class="header-meta" id="header-meta">Loading…</div>
+  </div>
+</header>
+
+<!-- ══════════════ TAB NAV ══════════════ -->
+<nav class="tab-nav">
+  <div class="tab-nav-inner">
+    <button class="tab-btn active" data-tab="tab-health"    onclick="showTab('tab-health')">Payment Health</button>
+    <button class="tab-btn"        data-tab="tab-customers" onclick="showTab('tab-customers')">Customer Portfolio</button>
+    <button class="tab-btn"        data-tab="tab-network"   onclick="showTab('tab-network')">Payment Network</button>
+  </div>
+</nav>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<main class="main-content">
+
+  <!-- ─────────── TAB 1: Payment Health ─────────── -->
+  <div id="tab-health" class="tab-panel active">
+
+    <div class="card watch-card">
+      <div class="card-title">System Watch Items</div>
+      <div class="card-subtitle">Algorithmically flagged anomalies requiring attention</div>
+      <div class="watch-items-list" id="watch-items-list"></div>
+    </div>
+
+    <div class="kpi-row kpi-row-4" id="kpis-health"></div>
+
+    <div class="section-header">
+      <div class="section-title">Health Check</div>
+      <div class="section-subtitle">Payment event stage distribution and exception rate trend</div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Event Stage Flow</div>
+        <div class="card-subtitle">Distribution of all payment events by lifecycle stage (%)</div>
+        <div class="chart-wrap" style="height:210px"><canvas id="chart-event-stage"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Exception Rate Trend</div>
+        <div class="card-subtitle">12-month rolling — dashed line = 0.20% goal</div>
+        <div class="chart-wrap" style="height:210px"><canvas id="chart-exception-trend"></canvas></div>
       </div>
     </div>
 
-    <!-- Navigation Scroll Area -->
-    <div class="flex-1 overflow-y-auto py-4 px-3 space-y-6">
-      
-      <!-- Operations -->
-      <div>
-        <h3 class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Operations</h3>
-        <ul class="space-y-1">
-          <li><a href="#" class="nav-item nav-active flex items-center gap-3 px-3 py-2 rounded-md text-sm"><i class="ph ph-flow-arrow text-lg"></i> Virtual Card Propensity (Monetization Matrix)</a></li>
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-waterfall text-lg"></i> CBM Aging Waterfall</a></li>
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-warning-circle text-lg"></i> Exception Pareto</a></li>
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-funnel text-lg"></i> Onboarding Velocity</a></li>
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-activity text-lg"></i> Platform SLA</a></li>
-        </ul>
+    <div class="section-header">
+      <div class="section-title">Payment Lifecycle Analysis</div>
+      <div class="section-subtitle">Age distribution by bucket and refund reason breakdown</div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Payment Age Distribution</div>
+        <div class="card-subtitle">Count of payments by days outstanding</div>
+        <div class="chart-wrap" style="height:270px"><canvas id="chart-age-dist"></canvas></div>
       </div>
-
-      <!-- Sales -->
-      <div>
-        <h3 class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Sales</h3>
-        <ul class="space-y-1">
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-trend-up text-lg"></i> Pipeline Velocity</a></li>
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-squares-four text-lg"></i> Win/Loss 2x2</a></li>
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-handshake text-lg"></i> Partner Yield</a></li>
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-crosshair text-lg"></i> Rep Execution</a></li>
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-chart-line-up text-lg"></i> Forecast vs Actuals</a></li>
-        </ul>
-      </div>
-
-      <!-- Marketing -->
-      <div>
-        <h3 class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Marketing</h3>
-        <ul class="space-y-1">
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-currency-dollar text-lg"></i> CAC to LTV Ratio</a></li>
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-git-merge text-lg"></i> Multi-Touch Attr.</a></li>
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-megaphone text-lg"></i> Campaign ROI 2x2</a></li>
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-buildings text-lg"></i> ABM Penetration</a></li>
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-cursor-click text-lg"></i> Digital Journey</a></li>
-        </ul>
-      </div>
-
-      <!-- Customer Value -->
-      <div>
-        <h3 class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Customer Value</h3>
-        <ul class="space-y-1">
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-credit-card text-lg"></i> V-Card Propensity</a></li>
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-chart-polar text-lg"></i> Wallet Share Lorenz</a></li>
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-chart-bar text-lg"></i> NRR Waterfall</a></li>
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-arrows-left-right text-lg"></i> Modality Migration</a></li>
-          <li><a href="#" class="nav-item flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-600"><i class="ph ph-piggy-bank text-lg"></i> Buyer ROI / Rebates</a></li>
-        </ul>
+      <div class="card">
+        <div class="card-title">Refund Analysis</div>
+        <div class="card-subtitle">Breakdown of refund reasons by volume and transaction count</div>
+        <div class="chart-sub-title">Top 10 Refund Reasons by Volume ($)</div>
+        <div class="chart-wrap" style="height:230px"><canvas id="chart-refund-volume"></canvas></div>
+        <hr class="chart-divider">
+        <div class="chart-sub-title">Top 10 Refund Reasons by Count</div>
+        <div class="chart-wrap" style="height:230px"><canvas id="chart-refund-count"></canvas></div>
       </div>
     </div>
-    
-    <!-- User Footer -->
-    <div class="p-4 border-t border-finBorder flex items-center gap-3">
-      <div class="h-8 w-8 rounded-full bg-finNavy text-white flex items-center justify-center font-bold text-xs">CW</div>
-      <div class="text-sm">
-        <div class="font-semibold text-finNavy">Chris Wyatt</div>
-        <div class="text-xs text-gray-500">Executive Viewer</div>
+
+  </div><!-- /tab-health -->
+
+
+  <!-- ─────────── TAB 2: Customer Portfolio ─────────── -->
+  <div id="tab-customers" class="tab-panel">
+
+    <div class="kpi-row kpi-row-3" id="kpis-customers"></div>
+
+    <div class="card mb-24">
+      <div class="card-title">Monthly Payment Volume Trend</div>
+      <div class="card-subtitle">13-month rolling — stacked bars: ACH / Virtual Card / Check · line: total monthly volume</div>
+      <div class="chart-wrap" style="height:290px"><canvas id="chart-volume-trend"></canvas></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Top 10 Customers by Volume</div>
+        <div class="card-subtitle">Total payment volume processed (all periods)</div>
+        <div class="chart-wrap" style="height:310px"><canvas id="chart-top-buyers"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Customer Concentration</div>
+        <div class="card-subtitle">Top 10 customers vs. all others by total volume</div>
+        <div class="chart-wrap" style="height:230px"><canvas id="chart-concentration"></canvas></div>
+        <div class="concentration-stat">
+          <div class="concentration-pct" id="concentration-pct">—</div>
+          <div class="concentration-label">Top 10 customers share of total volume</div>
+        </div>
       </div>
     </div>
-  </aside>
 
-  <!-- Main Content Area -->
-  <main class="flex-1 flex flex-col h-full overflow-hidden relative">
-    
-    <!-- Top Header -->
-    <header class="h-16 bg-white border-b border-finBorder flex items-center justify-between px-8 shadow-sm z-10">
-      <div class="flex items-center gap-4">
-        <h1 class="text-xl font-bold text-finNavy tracking-tight">Virtual Card Propensity (Monetization Matrix)</h1>
-        <span class="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold border border-blue-100">Customer Value</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <div class="text-sm text-gray-500 flex items-center gap-1">
-          <i class="ph ph-clock"></i> Live Data via BigQuery
-        </div>
-        <button class="bg-finNavy hover:bg-finEmerald text-white px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm flex items-center gap-2">
-          <i class="ph ph-download-simple"></i> Export Deck
-        </button>
-      </div>
-    </header>
-
-    <!-- Scrollable Dashboard Content -->
-    <div class="flex-1 overflow-y-auto p-8">
-      
-      <!-- Top KPIs -->
-      <div class="grid grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-xl p-5 border border-finBorder shadow-pe hover:shadow-pe-hover transition-shadow">
-          <div class="flex justify-between items-start mb-2">
-            <h4 class="text-sm font-semibold text-gray-500">Total Volume Flow</h4>
-            <div class="p-1.5 bg-green-50 rounded-md text-finEmerald"><i class="ph ph-money text-lg"></i></div>
-          </div>
-          <div class="text-2xl font-bold text-finNavy">$1.42B</div>
-          <div class="text-xs text-green-600 flex items-center gap-1 mt-1 font-medium"><i class="ph-bold ph-trend-up"></i> +4.2% MoM</div>
-        </div>
-        
-        <div class="bg-white rounded-xl p-5 border border-finBorder shadow-pe hover:shadow-pe-hover transition-shadow">
-          <div class="flex justify-between items-start mb-2">
-            <h4 class="text-sm font-semibold text-gray-500">Avg Settlement Time</h4>
-            <div class="p-1.5 bg-blue-50 rounded-md text-blue-500"><i class="ph ph-hourglass text-lg"></i></div>
-          </div>
-          <div class="text-2xl font-bold text-finNavy">2.4 Days</div>
-          <div class="text-xs text-green-600 flex items-center gap-1 mt-1 font-medium"><i class="ph-bold ph-trend-down"></i> -0.3 Days MoM</div>
-        </div>
-
-        <div class="bg-white rounded-xl p-5 border border-finBorder shadow-pe hover:shadow-pe-hover transition-shadow">
-          <div class="flex justify-between items-start mb-2">
-            <h4 class="text-sm font-semibold text-gray-500">Exception Rate</h4>
-            <div class="p-1.5 bg-red-50 rounded-md text-red-500"><i class="ph ph-warning-octagon text-lg"></i></div>
-          </div>
-          <div class="text-2xl font-bold text-finNavy">1.8%</div>
-          <div class="text-xs text-red-600 flex items-center gap-1 mt-1 font-medium"><i class="ph-bold ph-trend-up"></i> +0.2% MoM</div>
-        </div>
-
-        <div class="bg-white rounded-xl p-5 border border-finBorder shadow-pe hover:shadow-pe-hover transition-shadow">
-          <div class="flex justify-between items-start mb-2">
-            <h4 class="text-sm font-semibold text-gray-500">Float Capital</h4>
-            <div class="p-1.5 bg-purple-50 rounded-md text-purple-500"><i class="ph ph-bank text-lg"></i></div>
-          </div>
-          <div class="text-2xl font-bold text-finNavy">$42.5M</div>
-          <div class="text-xs text-gray-500 flex items-center gap-1 mt-1 font-medium"><i class="ph-bold ph-minus"></i> Stable</div>
-        </div>
-      </div>
-
-      <!-- Main Analytical Block: Viz + "So What?" -->
-      <div class="grid grid-cols-3 gap-6 mb-8">
-        
-        <!-- Interactive Visualization Area -->
-        <div class="col-span-2 bg-white rounded-xl border border-finBorder shadow-pe overflow-hidden flex flex-col">
-          <div class="p-5 border-b border-finBorder flex justify-between items-center bg-gray-50/50">
-            <h2 class="text-lg font-bold text-finNavy">Monetization Propensity (Frequency vs Avg Size)</h2>
-            <div class="flex gap-2">
-              <button class="px-3 py-1 text-xs font-semibold bg-white border border-gray-200 rounded text-gray-600 hover:bg-gray-50 shadow-sm">MTD</button>
-              <button class="px-3 py-1 text-xs font-semibold bg-finNavy border border-finNavy rounded text-white shadow-sm">YTD</button>
-            </div>
-          </div>
-          <div class="p-6 flex-1 relative min-h-[400px]">
-            <!-- Chart Container -->
-            <canvas id="mainChart"></canvas>
-            
-            <!-- Floating interactive tooltip mockup -->
-            <div class="absolute top-1/4 left-1/3 glass-card p-3 rounded-lg shadow-lg text-sm hidden" id="hover-card">
-              <div class="font-bold text-finNavy border-b border-gray-100 pb-1 mb-1">Check Processing</div>
-              <div class="flex justify-between gap-4"><span class="text-gray-500">Volume:</span> <span class="font-semibold">$450M</span></div>
-              <div class="flex justify-between gap-4"><span class="text-gray-500">Exceptions:</span> <span class="font-semibold text-red-500">4.2%</span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- "So What?" Strategic Narrative Block -->
-        <div class="col-span-1 bg-finNavy rounded-xl border border-finNavy shadow-pe text-white p-6 flex flex-col relative overflow-hidden">
-          <!-- Subtle background accent -->
-          <div class="absolute -right-12 -top-12 w-32 h-32 bg-finEmerald rounded-full opacity-20 blur-2xl"></div>
-          
-          <div class="flex items-center gap-2 mb-4 text-finEmerald font-bold tracking-wide text-xs uppercase">
-            <i class="ph-fill ph-lightbulb"></i> Strategic Takeaway
-          </div>
-          
-          <h3 class="text-2xl font-bold mb-4 leading-tight">High-Frequency, High-Value ACH/Check suppliers present immediate monetization ROI.</h3>
-          
-          <div class="space-y-4 text-sm text-blue-100 font-light flex-1">
-            <p>
-              The upper-right quadrant contains suppliers receiving over $5M in combined annual volume via zero-margin legacy rails (Check/ACH) with high transaction frequency.
-            </p>
-            <p>
-              Converting just the top 10 'Whale' suppliers in this cluster to Virtual Card (assuming standard 1.5% rebate) yields approximately <strong class="text-white font-semibold">$425k in net new annual revenue</strong>. 
-            </p>
-            <div class="p-3 bg-white/10 rounded-lg border border-white/20 mt-4 backdrop-blur-sm">
-              <div class="text-xs uppercase text-gray-300 font-semibold mb-1">Executive Action</div>
-              <p class="font-medium text-white">Launch targeted Tier 1 enablement campaigns at the upper-right quadrant. Prioritize Check-receivers over ACH for dual operational & revenue wins.</p>
-            </div>
-          </div>
-        </div>
-        
-      </div>
-
+    <div class="card">
+      <div class="card-title">Customer Health Overview</div>
+      <div class="card-subtitle">Top 10 accounts ranked by total payment volume</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:36px">#</th>
+            <th>Customer Name</th>
+            <th class="r">Total Volume</th>
+            <th class="r">Payment Count</th>
+            <th class="r">Avg Payment Size</th>
+          </tr>
+        </thead>
+        <tbody id="customer-table-body"></tbody>
+      </table>
     </div>
-  </main>
 
-  
-      <!-- Wallet Share Lorenz Curve Block -->
-      <div class="grid grid-cols-3 gap-6 mb-8">
-        
-        <!-- Interactive Visualization Area -->
-        <div class="col-span-2 bg-white rounded-xl border border-finBorder shadow-pe overflow-hidden flex flex-col">
-          <div class="p-5 border-b border-finBorder flex justify-between items-center bg-gray-50/50">
-            <h2 class="text-lg font-bold text-finNavy">Wallet Share Lorenz Curve</h2>
-            <div class="flex gap-2">
-              <span class="px-3 py-1 text-xs font-semibold bg-green-50 text-finEmerald border border-green-100 rounded shadow-sm">Gini Coefficient: 0.82</span>
-            </div>
-          </div>
-          <div class="p-6 flex-1 relative min-h-[400px]">
-            <canvas id="lorenzChart"></canvas>
-          </div>
-        </div>
+  </div><!-- /tab-customers -->
 
-        <!-- "So What?" Strategic Narrative Block -->
-        <div class="col-span-1 bg-white rounded-xl border border-finBorder shadow-pe p-6 flex flex-col relative overflow-hidden">
-          
-          <div class="flex items-center gap-2 mb-4 text-finNavy font-bold tracking-wide text-xs uppercase">
-            <i class="ph-fill ph-lightbulb text-finEmerald"></i> Strategic Takeaway
-          </div>
-          
-          <h3 class="text-2xl font-bold mb-4 leading-tight text-finNavy">Extreme volume concentration requires a bifurcated enablement strategy.</h3>
-          
-          <div class="space-y-4 text-sm text-gray-600 font-light flex-1">
-            <p>
-              The Gini Coefficient of <strong class="text-finNavy font-semibold">0.82</strong> indicates severe inequality in supplier wallet share.
-            </p>
-            <p>
-              The <strong class="text-finNavy font-semibold">top 5% of suppliers control 68% of total AP spend</strong>, while the remaining 95% form a massive "long tail" of low-value, high-friction payments.
-            </p>
-            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 mt-4">
-              <div class="text-xs uppercase text-finNavy font-semibold mb-1">Executive Action</div>
-              <p class="font-medium text-finText">Split the enablement team. Assign Enterprise reps exclusively to the top 5% for high-touch negotiation, and deploy a zero-touch, automated onboarding product for the remaining 95% long-tail.</p>
-            </div>
-          </div>
-        </div>
-        
+
+  <!-- ─────────── TAB 3: Payment Network ─────────── -->
+  <div id="tab-network" class="tab-panel">
+
+    <div class="kpi-row kpi-row-3" id="kpis-network"></div>
+
+    <div class="card migration-card">
+      <div class="card-title">🎯 Virtual Card Migration Opportunities</div>
+      <div class="card-subtitle">High-volume suppliers currently on Check — prime conversion candidates for virtual card interchange revenue</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:36px">#</th>
+            <th>Supplier</th>
+            <th>Method</th>
+            <th class="r">Total Volume</th>
+            <th class="r">Frequency</th>
+            <th class="r">Est. Interchange (1.5%)</th>
+          </tr>
+        </thead>
+        <tbody id="migration-table-body"></tbody>
+        <tfoot>
+          <tr class="total-row">
+            <td colspan="5" style="font-weight:700">Total Estimated Revenue Opportunity</td>
+            <td class="r interchange-value" id="migration-total">—</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Top 20 Suppliers by Volume</div>
+        <div class="card-subtitle">Color indicates payment method — Amber=Check · Navy=ACH · Emerald=Card/VAN</div>
+        <div class="chart-wrap" style="height:440px"><canvas id="chart-top-suppliers"></canvas></div>
       </div>
+      <div class="card">
+        <div class="card-title">Payment Method Distribution</div>
+        <div class="card-subtitle">Transaction count share by payment method (all periods)</div>
+        <div class="chart-wrap" style="height:310px"><canvas id="chart-method-dist"></canvas></div>
+      </div>
+    </div>
 
-  <!-- Interactive Scripting -->
-  <script>
-    // Load Data from customer_value_data.js
-    const ctx = document.getElementById('mainChart').getContext('2d');
-    
-    // Finexio PE Palette
-    const colors = {
-      vcard: '#00D382', // Emerald
-      ach: '#002B49',   // Navy
-      check: '#94A3B8', // Slate
-      wire: '#F59E0B'   // Gold
-    };
+    <div class="card" style="margin-top:0">
+      <div class="card-title">Supplier Payment Profile Matrix</div>
+      <div class="card-subtitle">Top 50 suppliers — X: transaction frequency · Y: avg payment size · Color: payment method</div>
+      <div class="chart-wrap" style="height:440px"><canvas id="chart-scatter"></canvas></div>
+    </div>
 
-    // Prepare Bubble Data
-    const rawData = typeof CUSTOMER_VALUE_DATA !== 'undefined' ? (CUSTOMER_VALUE_DATA.supplierPropensity || []) : [];
-    
-    const achData = [];
-    const checkData = [];
-    
-    // Process top 100 for visual clarity
-    rawData.slice(0, 100).forEach(d => {
-      const bubble = {
-        x: d.frequency,
-        y: d.avg_size,
-        r: Math.max(5, Math.min(30, Math.sqrt(d.total_volume) / 500)), // Volume scales radius
-        supplier_name: d.supplier_name,
-        total_volume: d.total_volume,
-        method: d.method
-      };
-      if (d.method === 'ACH') achData.push(bubble);
-      if (d.method === 'Check') checkData.push(bubble);
-    });
+  </div><!-- /tab-network -->
 
-    new Chart(ctx, {
-      type: 'bubble',
+</main>
+
+<footer class="page-footer">
+  Finexio Operations Intelligence &nbsp;·&nbsp; Data as of <span id="footer-date">—</span> &nbsp;·&nbsp; Powered by Chart.js 4.4.0
+</footer>
+
+
+<!-- ══════════════ DATA FILES ══════════════ -->
+<script src="cbm_insights_data.js"></script>
+<script src="customer_value_data.js"></script>
+<script src="ops_data.js"></script>
+
+<!-- ══════════════ DASHBOARD SCRIPT ══════════════ -->
+<script>
+'use strict';
+
+// ─── Formatters ──────────────────────────────────────────────
+const fmtDollar = n =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+
+const fmtNum = n =>
+  new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(n);
+
+function fmtCompact(n) {
+  const a = Math.abs(n);
+  if (a >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B';
+  if (a >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
+  if (a >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K';
+  return fmtDollar(n);
+}
+
+function fmtCompactNum(n) {
+  const a = Math.abs(n);
+  if (a >= 1e9) return (n / 1e9).toFixed(1) + 'B';
+  if (a >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (a >= 1e3) return (n / 1e3).toFixed(0) + 'K';
+  return fmtNum(n);
+}
+
+function fmtDate(isoStr) {
+  return new Date(isoStr).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function fmtMonth(m) {
+  const [y, mo] = m.split('-');
+  return new Date(+y, +mo - 1, 1).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+}
+
+// ─── Colors ──────────────────────────────────────────────────
+const C = {
+  navy:     '#043886',
+  navyMid:  '#0A52C4',
+  blue:     '#169ee3',
+  paleBlue: '#adddf5',
+  emerald:  '#00C48C',
+  amber:    '#F59E0B',
+  rose:     '#E53E3E',
+  muted:    '#8898AA',
+};
+
+const RANK_COLORS = [
+  '#043886','#0A52C4','#1260D4','#1870E0','#169ee3',
+  '#35aee6','#55bde9','#73ccec','#91daf0','#adddf5',
+];
+
+function methodColor(method, alpha) {
+  const a = (alpha !== undefined) ? alpha : 1;
+  const map = {
+    'Check':           `rgba(245,158,11,${a})`,
+    'ACH':             `rgba(4,56,134,${a})`,
+    'Virtual Card':    `rgba(0,196,140,${a})`,
+    'Card/VAN':        `rgba(0,196,140,${a})`,
+    'E-Check':         `rgba(22,158,227,${a})`,
+    'Card by Mail':    `rgba(173,221,245,${a})`,
+    'Finexio Express': `rgba(10,82,196,${a})`,
+    'Wire':            `rgba(136,152,170,${a})`,
+  };
+  return map[method] || `rgba(136,152,170,${a})`;
+}
+
+// ─── Chart Registry ──────────────────────────────────────────
+const CHARTS = {};
+
+function destroyChart(id) {
+  if (CHARTS[id]) { CHARTS[id].destroy(); delete CHARTS[id]; }
+}
+
+function destroyAll() {
+  Object.keys(CHARTS).forEach(destroyChart);
+}
+
+Chart.defaults.font.family = "'Inter', -apple-system, sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.color = '#425466';
+
+// ─── Tab Switching ────────────────────────────────────────────
+let activeTab = 'tab-health';
+
+function showTab(tabId) {
+  if (activeTab === tabId) return;
+  destroyAll();
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  activeTab = tabId;
+  if (tabId === 'tab-health')     initTab1();
+  else if (tabId === 'tab-customers') initTab2();
+  else if (tabId === 'tab-network')   initTab3();
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// TAB 1 · PAYMENT HEALTH
+// ══════════════════════════════════════════════════════════════
+function initTab1() {
+  renderWatchItems();
+  renderKPIs1();
+  renderEventStageFunnel();
+  renderExceptionTrend();
+  renderAgeDistribution();
+  renderRefundCharts();
+}
+
+function computeWatchItems() {
+  const items  = [];
+  const trend  = CBM_INSIGHTS_DATA.exceptionTrend;
+  const age    = CBM_INSIGHTS_DATA.ageDistribution;
+  const refund = CBM_INSIGHTS_DATA.refundAnalysis;
+
+  // 1. Exception rate MoM delta
+  if (trend.length >= 2) {
+    const curr  = trend[0].rate;
+    const prev  = trend[1].rate;
+    const delta = +(curr - prev).toFixed(3);
+    if (delta > 0.05) {
+      items.push({ type: 'critical', icon: '🔴',
+        text: `Exception rate surged +${delta.toFixed(2)}pp MoM — ${curr}% (current) vs ${prev}% (prior month). Immediate review recommended.` });
+    } else if (delta > 0.01) {
+      items.push({ type: 'warning', icon: '⚠️',
+        text: `Exception rate up +${delta.toFixed(2)}pp MoM (${curr}% vs ${prev}% prior month). Monitor for continued pressure.` });
+    } else if (delta < -0.02) {
+      items.push({ type: 'ok', icon: '✅',
+        text: `Exception rate improving — down ${Math.abs(delta).toFixed(2)}pp MoM (${curr}% vs ${prev}%).` });
+    }
+  }
+
+  // 2. 30+ day payment aging
+  const age30 = age.find(b => b.bucket === '30+ days');
+  if (age30) {
+    const total = age.reduce((s, b) => s + b.count, 0);
+    const pct   = age30.count / total * 100;
+    if (pct > 5) {
+      items.push({ type: 'critical', icon: '🔴',
+        text: `${fmtNum(age30.count)} payments aged 30+ days — ${pct.toFixed(1)}% of all outstanding. Elevated settlement risk.` });
+    } else if (pct > 3) {
+      items.push({ type: 'warning', icon: '⚠️',
+        text: `${fmtNum(age30.count)} payments aged 30+ days (${pct.toFixed(1)}% of all payments). Watch aging trend.` });
+    }
+  }
+
+  // 3. Dominant refund reason by dollar
+  const sorted = [...refund.by_reason].sort((a, b) => b.amount - a.amount);
+  if (sorted.length > 0) {
+    const top = sorted[0];
+    const pct = top.amount / refund.total_amount * 100;
+    if (pct > 25) {
+      items.push({ type: 'warning', icon: '⚠️',
+        text: `"${top.reason}" is the largest refund driver — ${pct.toFixed(1)}% of total refund volume (${fmtCompact(top.amount)} of ${fmtCompact(refund.total_amount)}).` });
+    }
+  }
+
+  if (items.length === 0) {
+    items.push({ type: 'ok', icon: '✅',
+      text: 'All systems nominal — no anomalies detected across exception rate, payment aging, or refund patterns.' });
+  }
+  return items.slice(0, 3);
+}
+
+function renderWatchItems() {
+  const items = computeWatchItems();
+  document.getElementById('watch-items-list').innerHTML = items.map(i =>
+    `<div class="watch-item ${i.type}">
+       <span class="watch-item-icon">${i.icon}</span>
+       <span class="watch-item-text">${i.text}</span>
+     </div>`
+  ).join('');
+}
+
+function renderKPIs1() {
+  const k = CBM_INSIGHTS_DATA.kpis;
+  const ageBadge = k.avg_payment_age > 14 ? 'badge-rose'    : k.avg_payment_age > 7  ? 'badge-amber'  : 'badge-emerald';
+  const ageLabel = k.avg_payment_age > 14 ? 'Critical'      : k.avg_payment_age > 7  ? 'Watch'        : 'Good';
+  const exBadge  = k.exception_rate  > 0.35 ? 'badge-rose'  : k.exception_rate  > 0.25 ? 'badge-amber' : 'badge-emerald';
+  const exLabel  = k.exception_rate  > 0.35 ? 'Critical'    : k.exception_rate  > 0.25 ? 'Watch'       : 'On Target';
+  const seBadge  = k.pct_settled     < 95   ? 'badge-rose'  : k.pct_settled     < 97   ? 'badge-amber' : 'badge-emerald';
+  const seLabel  = k.pct_settled     < 95   ? 'Low'         : k.pct_settled     < 97   ? 'Fair'        : 'Strong';
+
+  document.getElementById('kpis-health').innerHTML = `
+    <div class="kpi-card">
+      <div class="kpi-label">Payments in Flight</div>
+      <div class="kpi-value">${fmtNum(k.payments_in_flight)}</div>
+      <div class="kpi-footer">
+        <span class="badge badge-blue">Active</span>
+        <span class="kpi-hint">Total outstanding payments</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Avg Payment Age</div>
+      <div class="kpi-value">${k.avg_payment_age.toFixed(1)}<span class="kpi-value-unit"> days</span></div>
+      <div class="kpi-footer">
+        <span class="badge ${ageBadge}">${ageLabel}</span>
+        <span class="kpi-hint">Target ≤7 days</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Exception Rate</div>
+      <div class="kpi-value">${k.exception_rate.toFixed(2)}<span class="kpi-value-unit">%</span></div>
+      <div class="kpi-footer">
+        <span class="badge ${exBadge}">${exLabel}</span>
+        <span class="kpi-hint">Target ≤0.25%</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Settlement Rate</div>
+      <div class="kpi-value">${k.pct_settled.toFixed(1)}<span class="kpi-value-unit">%</span></div>
+      <div class="kpi-footer">
+        <span class="badge ${seBadge}">${seLabel}</span>
+        <span class="kpi-hint">Target ≥97%</span>
+      </div>
+    </div>`;
+}
+
+function renderEventStageFunnel() {
+  const stages = CBM_INSIGHTS_DATA.eventStageFunnel;
+  const colors = { Disbursement: C.navy, Reissue: C.blue, Refund: C.rose, Funding: C.amber, Processing: C.paleBlue };
+  const ctx = document.getElementById('chart-event-stage').getContext('2d');
+  CHARTS['event-stage'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Payment Events'],
+      datasets: stages.map(s => ({
+        label: s.stage, data: [s.pct],
+        backgroundColor: colors[s.stage] || C.muted,
+        borderRadius: 0, borderSkipped: false,
+      })),
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 14, boxWidth: 12 } },
+        tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.raw}%` } },
+      },
+      scales: {
+        x: { stacked: true, max: 100, ticks: { callback: v => v + '%' }, grid: { color: '#E3E8EF' } },
+        y: { stacked: true, ticks: { display: false }, grid: { display: false } },
+      },
+    },
+  });
+}
+
+function renderExceptionTrend() {
+  const raw    = [...CBM_INSIGHTS_DATA.exceptionTrend].reverse();
+  const labels = raw.map(d => fmtMonth(d.month));
+  const rates  = raw.map(d => d.rate);
+  const goal   = raw.map(() => 0.20);
+  const curr   = CBM_INSIGHTS_DATA.kpis.exception_rate;
+  const lc     = curr > 0.35 ? C.rose : curr > 0.25 ? C.amber : C.emerald;
+
+  const ctx  = document.getElementById('chart-exception-trend').getContext('2d');
+  const grad = ctx.createLinearGradient(0, 0, 0, 210);
+  grad.addColorStop(0, lc + '38');
+  grad.addColorStop(1, lc + '00');
+
+  CHARTS['exception-trend'] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Exception Rate', data: rates,
+          borderColor: lc, backgroundColor: grad, fill: true,
+          tension: 0.35, pointRadius: 4, pointBackgroundColor: lc, borderWidth: 2.5,
+        },
+        {
+          label: 'Goal (0.20%)', data: goal,
+          borderColor: '#E53E3E', borderDash: [6, 4],
+          pointRadius: 0, fill: false, borderWidth: 1.5,
+        },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 14, boxWidth: 12 } },
+        tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.raw}%` } },
+      },
+      scales: {
+        x: { ticks: { font: { size: 10 } }, grid: { color: '#E3E8EF' } },
+        y: { ticks: { callback: v => v + '%' }, grid: { color: '#E3E8EF' } },
+      },
+    },
+  });
+}
+
+function renderAgeDistribution() {
+  const data = CBM_INSIGHTS_DATA.ageDistribution;
+  const bucketColor = {
+    '0-1 days': C.emerald, '1-3 days': C.emerald,
+    '3-7 days': C.paleBlue, '7-14 days': C.amber,
+    '14-30 days': C.rose, '30+ days': '#C53030',
+  };
+  const ctx = document.getElementById('chart-age-dist').getContext('2d');
+  CHARTS['age-dist'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.map(d => d.bucket),
+      datasets: [{
+        label: 'Payment Count', data: data.map(d => d.count),
+        backgroundColor: data.map(d => bucketColor[d.bucket] || C.muted),
+        borderRadius: 6, borderSkipped: false,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => ` ${fmtNum(c.raw)} payments` } },
+      },
+      scales: {
+        x: { ticks: { font: { size: 11 } }, grid: { display: false } },
+        y: { ticks: { callback: v => fmtCompactNum(v) }, grid: { color: '#E3E8EF' } },
+      },
+    },
+  });
+}
+
+function renderRefundCharts() {
+  const reasons    = CBM_INSIGHTS_DATA.refundAnalysis.by_reason;
+  const top10Amt   = [...reasons].sort((a, b) => b.amount - a.amount).slice(0, 10);
+  const top10Count = [...reasons].sort((a, b) => b.count  - a.count ).slice(0, 10);
+
+  function makeHBar(canvasId, key, rows, field, labelFn) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    CHARTS[key] = new Chart(ctx, {
+      type: 'bar',
       data: {
-        datasets: [
-          {
-            label: 'ACH Suppliers',
-            data: achData,
-            backgroundColor: 'rgba(0, 43, 73, 0.7)', // Navy
-            borderColor: colors.ach,
-            borderWidth: 1
-          },
-          {
-            label: 'Check Suppliers',
-            data: checkData,
-            backgroundColor: 'rgba(148, 163, 184, 0.7)', // Slate
-            borderColor: colors.check,
-            borderWidth: 1
-          }
-        ]
+        labels: rows.map(r => r.reason),
+        datasets: [{
+          label: field === 'amount' ? 'Amount' : 'Count',
+          data: rows.map(r => r[field]),
+          backgroundColor: rows.map((_, i) => RANK_COLORS[i] || C.paleBlue),
+          borderRadius: 4, borderSkipped: false,
+        }],
       },
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { family: 'Inter', weight: '500' } } },
-          tooltip: {
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            titleColor: '#002B49',
-            bodyColor: '#334155',
-            borderColor: '#E2E8F0',
-            borderWidth: 1,
-            padding: 12,
-            boxPadding: 6,
-            titleFont: { family: 'Inter', size: 14, weight: 'bold' },
-            bodyFont: { family: 'Inter', size: 13 },
-            callbacks: {
-              title: function(context) {
-                return context[0].raw.supplier_name;
-              },
-              label: function(context) {
-                const d = context.raw;
-                return [
-                  `Method: ${d.method}`,
-                  `Total Volume: $${(d.total_volume / 1000000).toFixed(2)}M`,
-                  `Avg Size: $${d.y.toLocaleString(undefined, {maximumFractionDigits:0})}`,
-                  `Frequency: ${d.x}`
-                ];
-              }
-            }
-          }
+          legend: { display: false },
+          tooltip: { callbacks: { label: c => ` ${labelFn(c.raw)}` } },
         },
         scales: {
-          x: { 
-            type: 'logarithmic',
-            title: { display: true, text: 'Transaction Frequency (Log)', font: { family: 'Inter', weight: '600' } },
-            grid: { color: '#F1F5F9', drawTicks: false }
-          },
-          y: { 
-            type: 'logarithmic',
-            title: { display: true, text: 'Average Transaction Size (Log)', font: { family: 'Inter', weight: '600' } },
-            grid: { color: '#F1F5F9', drawTicks: false },
-            ticks: { callback: function(value) { return '$' + value; } }
-          }
-        }
-      }
-    });
-  
-    // Lorenz Curve Chart
-    const lorenzCtx = document.getElementById('lorenzChart').getContext('2d');
-    
-    // Sort suppliers by volume ascending to build Lorenz curve
-    let sortedPropensity = [...rawData].sort((a, b) => a.total_volume - b.total_volume);
-    let totalVol = sortedPropensity.reduce((sum, d) => sum + d.total_volume, 0);
-    let totalSuppliers = sortedPropensity.length;
-    
-    let lorenzData = [{x: 0, y: 0}];
-    let cumVol = 0;
-    
-    sortedPropensity.forEach((d, i) => {
-      cumVol += d.total_volume;
-      lorenzData.push({
-        x: ((i + 1) / totalSuppliers) * 100,
-        y: (cumVol / totalVol) * 100
-      });
-    });
-
-    new Chart(lorenzCtx, {
-      type: 'line',
-      data: {
-        datasets: [
-          {
-            label: 'Actual Wallet Share',
-            data: lorenzData,
-            borderColor: '#002B49', // Navy
-            backgroundColor: 'rgba(0, 43, 73, 0.1)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: 0,
-            pointHoverRadius: 6
-          },
-          {
-            label: 'Perfect Equality',
-            data: [{x: 0, y: 0}, {x: 100, y: 100}],
-            borderColor: '#94A3B8',
-            borderDash: [5, 5],
-            pointRadius: 0,
-            fill: false
-          }
-        ]
+          x: { ticks: { callback: v => labelFn(v), font: { size: 10 } }, grid: { color: '#E3E8EF' } },
+          y: { ticks: { font: { size: 10 } }, grid: { display: false } },
+        },
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { family: 'Inter', weight: '500' } } },
-          tooltip: {
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            titleColor: '#002B49',
-            bodyColor: '#334155',
-            borderColor: '#E2E8F0',
-            borderWidth: 1,
-            padding: 12,
-            callbacks: {
-              label: function(context) {
-                return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '% of volume';
-              },
-              title: function(context) {
-                return 'Bottom ' + context[0].parsed.x.toFixed(1) + '% of Suppliers';
-              }
-            }
-          }
-        },
-        scales: {
-          x: { 
-            type: 'linear',
-            title: { display: true, text: 'Cumulative % of Suppliers', font: { family: 'Inter', weight: '600' } },
-            grid: { color: '#F1F5F9' },
-            min: 0, max: 100
-          },
-          y: { 
-            type: 'linear',
-            title: { display: true, text: 'Cumulative % of Volume', font: { family: 'Inter', weight: '600' } },
-            grid: { color: '#F1F5F9' },
-            min: 0, max: 100
-          }
-        }
-      }
     });
+  }
 
-  </script>
+  makeHBar('chart-refund-volume', 'refund-volume', top10Amt,   'amount', fmtCompact);
+  makeHBar('chart-refund-count',  'refund-count',  top10Count, 'count',  fmtNum);
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// TAB 2 · CUSTOMER PORTFOLIO
+// ══════════════════════════════════════════════════════════════
+function initTab2() {
+  renderKPIs2();
+  renderVolumeTrend();
+  renderTopBuyersChart();
+  renderConcentrationChart();
+  renderCustomerTable();
+}
+
+function renderKPIs2() {
+  const k = CUSTOMER_VALUE_DATA.kpis;
+  document.getElementById('kpis-customers').innerHTML = `
+    <div class="kpi-card">
+      <div class="kpi-label">Total Payment Volume</div>
+      <div class="kpi-value">${fmtCompact(k.total_payment_volume)}</div>
+      <div class="kpi-footer">
+        <span class="badge badge-blue">Current Period</span>
+        <span class="kpi-hint">${fmtNum(k.total_payments)} payments processed</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Active Customers</div>
+      <div class="kpi-value">${fmtNum(k.active_suppliers)}</div>
+      <div class="kpi-footer">
+        <span class="badge badge-emerald">Active</span>
+        <span class="kpi-hint">Registered suppliers</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Avg Payment Size</div>
+      <div class="kpi-value">${fmtCompact(k.avg_payment)}</div>
+      <div class="kpi-footer">
+        <span class="badge badge-blue">Per Transaction</span>
+        <span class="kpi-hint">Refunds: ${fmtCompact(k.refund_amount)}</span>
+      </div>
+    </div>`;
+}
+
+function renderVolumeTrend() {
+  const monthly = [...CUSTOMER_VALUE_DATA.monthlyVolume].reverse();
+  const labels  = monthly.map(d => fmtMonth(d.month));
+  const ctx = document.getElementById('chart-volume-trend').getContext('2d');
+  CHARTS['volume-trend'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          type: 'bar', label: 'ACH',
+          data: monthly.map(d => d.ach_amount),
+          backgroundColor: 'rgba(4,56,134,0.82)',
+          stack: 'vol', borderRadius: 3, order: 2,
+        },
+        {
+          type: 'bar', label: 'Virtual Card',
+          data: monthly.map(d => d.vc_amount),
+          backgroundColor: 'rgba(0,196,140,0.82)',
+          stack: 'vol', borderRadius: 3, order: 2,
+        },
+        {
+          type: 'bar', label: 'Check',
+          data: monthly.map(d => d.check_amount),
+          backgroundColor: 'rgba(245,158,11,0.82)',
+          stack: 'vol', borderRadius: 3, order: 2,
+        },
+        {
+          type: 'line', label: 'Total Volume',
+          data: monthly.map(d => d.amount),
+          borderColor: C.blue, backgroundColor: 'transparent',
+          pointRadius: 4, pointBackgroundColor: C.blue,
+          tension: 0.3, borderWidth: 2.5, order: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 14, boxWidth: 12 } },
+        tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${fmtCompact(c.raw)}` } },
+      },
+      scales: {
+        x: { stacked: true, ticks: { font: { size: 10 } }, grid: { display: false } },
+        y: { stacked: true, ticks: { callback: v => fmtCompact(v) }, grid: { color: '#E3E8EF' } },
+      },
+    },
+  });
+}
+
+function renderTopBuyersChart() {
+  const buyers = CUSTOMER_VALUE_DATA.topBuyers;
+  const labels = buyers.map(b => b.buyer_name.length > 28 ? b.buyer_name.slice(0, 28) + '…' : b.buyer_name);
+  const ctx = document.getElementById('chart-top-buyers').getContext('2d');
+  CHARTS['top-buyers'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Payment Volume', data: buyers.map(b => b.amount),
+        backgroundColor: C.navy, borderRadius: 4, borderSkipped: false,
+      }],
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: c => buyers[c[0].dataIndex].buyer_name,
+            label: c => ` ${fmtCompact(c.raw)}`,
+          },
+        },
+      },
+      scales: {
+        x: { ticks: { callback: v => fmtCompact(v), font: { size: 10 } }, grid: { color: '#E3E8EF' } },
+        y: { ticks: { font: { size: 10 } }, grid: { display: false } },
+      },
+    },
+  });
+}
+
+function renderConcentrationChart() {
+  const buyers     = CUSTOMER_VALUE_DATA.topBuyers;
+  const top10      = buyers.reduce((s, b) => s + b.amount, 0);
+  const allMonthly = CUSTOMER_VALUE_DATA.monthlyVolume.reduce((s, m) => s + m.amount, 0);
+  const rest       = Math.max(0, allMonthly - top10);
+  const denom      = top10 + rest;
+  const pct        = (top10 / denom * 100).toFixed(1);
+
+  document.getElementById('concentration-pct').textContent = pct + '%';
+
+  const ctx = document.getElementById('chart-concentration').getContext('2d');
+  CHARTS['concentration'] = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Top 10 Customers', 'All Others'],
+      datasets: [{ data: [top10, rest], backgroundColor: [C.navy, C.paleBlue], borderWidth: 2, borderColor: '#fff' }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '68%',
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 14, boxWidth: 12 } },
+        tooltip: { callbacks: { label: c => ` ${c.label}: ${fmtCompact(c.raw)}` } },
+      },
+    },
+  });
+}
+
+function renderCustomerTable() {
+  const buyers = CUSTOMER_VALUE_DATA.topBuyers;
+  document.getElementById('customer-table-body').innerHTML = buyers.map((b, i) => `
+    <tr>
+      <td class="row-num">${i + 1}</td>
+      <td style="font-weight:600">${b.buyer_name}</td>
+      <td class="r">${fmtCompact(b.amount)}</td>
+      <td class="r">${fmtNum(b.payment_count)}</td>
+      <td class="r">${fmtCompact(b.amount / b.payment_count)}</td>
+    </tr>`).join('');
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// TAB 3 · PAYMENT NETWORK
+// ══════════════════════════════════════════════════════════════
+function initTab3() {
+  renderKPIs3();
+  renderMigrationTable();
+  renderTopSuppliersChart();
+  renderMethodDistributionChart();
+  renderScatterChart();
+}
+
+function renderKPIs3() {
+  const suppliers   = CBM_INSIGHTS_DATA.supplierPropensity;
+  const totalVolume = suppliers.reduce((s, x) => s + x.total_volume, 0);
+  const count       = suppliers.length;
+
+  const mix      = CUSTOMER_VALUE_DATA.paymentMethodMix;
+  const totalTx  = mix.reduce((s, m) => s + m.count, 0);
+  const share    = method => ((mix.find(m => m.method === method)?.count || 0) / totalTx * 100).toFixed(0);
+
+  document.getElementById('kpis-network').innerHTML = `
+    <div class="kpi-card">
+      <div class="kpi-label">Total Supplier Volume</div>
+      <div class="kpi-value">${fmtCompact(totalVolume)}</div>
+      <div class="kpi-footer">
+        <span class="badge badge-blue">All Methods</span>
+        <span class="kpi-hint">${fmtNum(count)} suppliers tracked</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Suppliers Tracked</div>
+      <div class="kpi-value">${fmtNum(count)}</div>
+      <div class="kpi-footer">
+        <span class="badge badge-navy">In Network</span>
+        <span class="kpi-hint">Active payment relationships</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Payment Method Mix</div>
+      <div class="kpi-value" style="font-size:18px;line-height:1.6;font-weight:700">
+        <span style="color:${C.amber}">${share('Check')}% Check</span>
+        &nbsp;·&nbsp;<span style="color:${C.navy}">${share('ACH')}% ACH</span>
+        &nbsp;·&nbsp;<span style="color:${C.emerald}">${share('Virtual Card')}% Card</span>
+      </div>
+      <div class="kpi-footer"><span class="badge badge-amber">By Transaction Count</span></div>
+    </div>`;
+}
+
+function renderMigrationTable() {
+  const checkSupps = CBM_INSIGHTS_DATA.supplierPropensity
+    .filter(s => s.method === 'Check')
+    .sort((a, b) => b.total_volume - a.total_volume)
+    .slice(0, 10);
+
+  const totalInterchange = checkSupps.reduce((s, x) => s + x.total_volume * 0.015, 0);
+
+  document.getElementById('migration-table-body').innerHTML = checkSupps.map((s, i) => `
+    <tr>
+      <td class="row-num">${i + 1}</td>
+      <td style="font-weight:600">${s.supplier_name}</td>
+      <td><span class="method-pill pill-check">Check</span></td>
+      <td class="r">${fmtCompact(s.total_volume)}</td>
+      <td class="r">${fmtNum(s.frequency)}</td>
+      <td class="r interchange-value">${fmtCompact(s.total_volume * 0.015)}</td>
+    </tr>`).join('');
+
+  document.getElementById('migration-total').textContent = fmtCompact(totalInterchange);
+}
+
+function renderTopSuppliersChart() {
+  const top20 = [...CBM_INSIGHTS_DATA.supplierPropensity]
+    .sort((a, b) => b.total_volume - a.total_volume)
+    .slice(0, 20);
+
+  const labels = top20.map(s => s.supplier_name.length > 22 ? s.supplier_name.slice(0, 22) + '…' : s.supplier_name);
+  const ctx = document.getElementById('chart-top-suppliers').getContext('2d');
+  CHARTS['top-suppliers'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Total Volume',
+        data: top20.map(s => s.total_volume),
+        backgroundColor: top20.map(s => methodColor(s.method, 0.88)),
+        borderRadius: 3, borderSkipped: false,
+      }],
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: c => top20[c[0].dataIndex].supplier_name,
+            label: c => {
+              const s = top20[c.dataIndex];
+              return [` Volume: ${fmtCompact(s.total_volume)}`, ` Method: ${s.method}`];
+            },
+          },
+        },
+      },
+      scales: {
+        x: { ticks: { callback: v => fmtCompact(v), font: { size: 10 } }, grid: { color: '#E3E8EF' } },
+        y: { ticks: { font: { size: 9 } }, grid: { display: false } },
+      },
+    },
+  });
+}
+
+function renderMethodDistributionChart() {
+  const mix    = CUSTOMER_VALUE_DATA.paymentMethodMix;
+  const labels = mix.map(m => m.method);
+  const counts = mix.map(m => m.count);
+  const colors = mix.map(m => methodColor(m.method, 0.9));
+  const total  = counts.reduce((a, b) => a + b, 0);
+  const ctx = document.getElementById('chart-method-dist').getContext('2d');
+  CHARTS['method-dist'] = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ data: counts, backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '62%',
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 12, boxWidth: 12 } },
+        tooltip: {
+          callbacks: {
+            label: c => ` ${c.label}: ${fmtNum(c.raw)} (${(c.raw / total * 100).toFixed(1)}%)`,
+          },
+        },
+      },
+    },
+  });
+}
+
+function renderScatterChart() {
+  const top50 = [...CBM_INSIGHTS_DATA.supplierPropensity]
+    .sort((a, b) => b.total_volume - a.total_volume)
+    .slice(0, 50);
+
+  const groups = {};
+  top50.forEach(s => {
+    if (!groups[s.method]) groups[s.method] = [];
+    groups[s.method].push({
+      x: s.frequency, y: s.avg_size,
+      supplierName: s.supplier_name, method: s.method,
+      total_volume: s.total_volume, frequency: s.frequency, avg_size: s.avg_size,
+    });
+  });
+
+  const datasets = Object.entries(groups).map(([method, pts]) => ({
+    label: method, data: pts,
+    backgroundColor: methodColor(method, 0.72),
+    pointRadius: 6, pointHoverRadius: 9,
+  }));
+
+  const quadrantPlugin = {
+    id: 'quadrantLabels',
+    afterDraw(chart) {
+      const { ctx, chartArea } = chart;
+      if (!chartArea) return;
+      ctx.save();
+      ctx.font = '500 11px Inter, sans-serif';
+      ctx.fillStyle = 'rgba(136,152,170,0.5)';
+      ctx.textAlign = 'right';
+      ctx.fillText('High Value, High Frequency', chartArea.right - 10, chartArea.top + 18);
+      ctx.textAlign = 'left';
+      ctx.fillText('Large Payments, Low Frequency', chartArea.left + 10, chartArea.top + 18);
+      ctx.textAlign = 'right';
+      ctx.fillText('Small Payments, High Frequency', chartArea.right - 10, chartArea.bottom - 10);
+      ctx.textAlign = 'left';
+      ctx.fillText('Small, Infrequent', chartArea.left + 10, chartArea.bottom - 10);
+      ctx.restore();
+    },
+  };
+
+  const ctx = document.getElementById('chart-scatter').getContext('2d');
+  CHARTS['scatter'] = new Chart(ctx, {
+    type: 'scatter',
+    data: { datasets },
+    plugins: [quadrantPlugin],
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 14, boxWidth: 12 } },
+        tooltip: {
+          callbacks: {
+            label(c) {
+              const d = c.raw;
+              return [
+                ` ${d.supplierName}`,
+                ` Method: ${d.method}`,
+                ` Volume: ${fmtCompact(d.total_volume)}`,
+                ` Frequency: ${fmtNum(d.frequency)} txns`,
+                ` Avg Size: ${fmtCompact(d.avg_size)}`,
+              ];
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Transaction Frequency', font: { size: 11, weight: '600' }, color: '#425466' },
+          ticks: { callback: v => fmtNum(v), font: { size: 10 } },
+          grid: { color: '#E3E8EF' },
+        },
+        y: {
+          title: { display: true, text: 'Avg Payment Size ($)', font: { size: 11, weight: '600' }, color: '#425466' },
+          ticks: { callback: v => fmtCompact(v), font: { size: 10 } },
+          grid: { color: '#E3E8EF' },
+        },
+      },
+    },
+  });
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+(function init() {
+  const lu        = CBM_INSIGHTS_DATA.lastUpdated;
+  const formatted = fmtDate(lu);
+  document.getElementById('header-meta').innerHTML = `Last updated<br><strong>${formatted}</strong>`;
+  document.getElementById('footer-date').textContent = formatted;
+  initTab1();
+})();
+</script>
 </body>
 </html>
