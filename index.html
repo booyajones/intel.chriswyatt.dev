@@ -6,13 +6,16 @@
   <title>Finexio Operations Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
       --bg: #F6F9FC;
       --surface: #FFFFFF;
       --surface-2: #F8FAFC;
+      --surface-3: #EFF4FB;
       --navy: #043886;
       --navy-mid: #0A52C4;
       --blue: #169ee3;
@@ -28,1114 +31,1173 @@
       --text-secondary: #425466;
       --text-muted: #8898AA;
       --border: #E3E8EF;
+      --border-2: #CBD5E1;
       --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
       --shadow-md: 0 4px 12px rgba(10,37,64,0.08), 0 1px 3px rgba(10,37,64,0.04);
       --shadow-lg: 0 8px 24px rgba(10,37,64,0.10), 0 2px 6px rgba(10,37,64,0.06);
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font: 'Inter', -apple-system, sans-serif;
       --radius: 10px;
       --radius-lg: 14px;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 14px; }
     body {
       font-family: var(--font);
       background: var(--bg);
       color: var(--text-primary);
-      min-width: 1280px;
-      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
     }
 
-    /* ── Header ── */
-    .site-header {
+    /* ── HEADER ─────────────────────────────────────────────────── */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       box-shadow: var(--shadow-sm);
-      position: sticky; top: 0; z-index: 100;
     }
-    .header-inner {
-      max-width: 1600px; margin: 0 auto; padding: 0 32px;
-      display: flex; align-items: center; gap: 16px; height: 64px;
-    }
-    .logo-mark {
-      width: 40px; height: 40px;
-      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
-      border-radius: 10px; display: flex; align-items: center; justify-content: center;
-      font-size: 22px; font-weight: 800; color: #fff; flex-shrink: 0; letter-spacing: -1px;
-    }
-    .header-titles { flex: 1; }
-    .header-title { font-size: 16px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
-    .header-subtitle { font-size: 12px; color: var(--text-muted); font-weight: 400; }
-    .header-meta { font-size: 11px; color: var(--text-muted); text-align: right; line-height: 1.6; }
 
-    /* ── Tab Nav ── */
-    .tab-nav {
-      background: var(--surface); border-bottom: 1px solid var(--border);
-      position: sticky; top: 64px; z-index: 99;
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    .tab-nav-inner { max-width: 1600px; margin: 0 auto; padding: 0 32px; display: flex; }
+
+    .logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .header-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .header-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .updated-badge {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 14px;
+    }
+
+    /* ── TAB BAR ─────────────────────────────────────────────────── */
+    .tab-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex;
+      position: sticky;
+      top: 64px;
+      z-index: 99;
+    }
+
     .tab-btn {
-      padding: 14px 28px; font-size: 13px; font-weight: 500;
-      color: var(--text-secondary); border: none; background: none;
-      cursor: pointer; border-bottom: 3px solid transparent;
-      transition: color 0.15s, border-color 0.15s, background 0.15s;
-      font-family: var(--font); white-space: nowrap;
+      padding: 14px 22px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+      margin-bottom: -1px;
+      white-space: nowrap;
     }
-    .tab-btn:hover { color: var(--navy-mid); background: var(--blue-light); }
-    .tab-btn.active { color: var(--navy); border-bottom-color: var(--navy); font-weight: 600; }
 
-    /* ── Main Layout ── */
-    .main-content { max-width: 1600px; margin: 0 auto; padding: 32px; }
+    .tab-btn.active {
+      color: var(--navy);
+      border-bottom-color: var(--navy);
+      font-weight: 600;
+    }
+
+    .tab-btn:hover:not(.active) { color: var(--text-secondary); }
+
+    /* ── MAIN ────────────────────────────────────────────────────── */
+    .main {
+      padding: 28px 32px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* ── Cards ── */
-    .card {
-      background: var(--surface); border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md); padding: 24px; border: 1px solid var(--border);
+    /* ── KPI CARDS ───────────────────────────────────────────────── */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
     }
-    .card-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; }
-    .card-subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 18px; }
 
-    /* ── Watch Items ── */
-    .watch-card { border-left: 4px solid var(--navy); margin-bottom: 24px; }
-    .watch-items-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
-    .watch-item {
-      display: flex; align-items: flex-start; gap: 10px;
-      padding: 12px 16px; border-radius: var(--radius); font-size: 13px;
-    }
-    .watch-item.warning { background: var(--amber-bg); }
-    .watch-item.critical { background: var(--rose-bg); }
-    .watch-item.ok { background: var(--emerald-bg); }
-    .watch-item-icon { font-size: 15px; line-height: 1.5; flex-shrink: 0; }
-    .watch-item-text { line-height: 1.55; font-weight: 500; color: var(--text-primary); }
-
-    /* ── Migration Card ── */
-    .migration-card { border-left: 4px solid var(--amber); margin-bottom: 24px; }
-
-    /* ── KPI Cards ── */
-    .kpi-row { display: grid; gap: 20px; margin-bottom: 24px; }
-    .kpi-row-4 { grid-template-columns: repeat(4, 1fr); }
-    .kpi-row-3 { grid-template-columns: repeat(3, 1fr); }
     .kpi-card {
-      background: var(--surface); border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md); padding: 22px 24px;
-      border: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 20px 22px 18px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
     }
+
+    .kpi-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .kpi-icon { font-size: 22px; line-height: 1; }
+
+    .kpi-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+    .kpi-badge.emerald { background: var(--emerald-bg); color: #00875F; }
+    .kpi-badge.amber   { background: var(--amber-bg);   color: #B45309; }
+    .kpi-badge.rose    { background: var(--rose-bg);    color: #C53030; }
+    .kpi-badge.neutral { background: var(--blue-light); color: var(--navy-mid); }
+
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 4px;
+    }
+
     .kpi-label {
-      font-size: 11px; font-weight: 600; color: var(--text-muted);
-      text-transform: uppercase; letter-spacing: 0.6px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
     }
-    .kpi-value { font-size: 30px; font-weight: 800; color: var(--text-primary); line-height: 1.1; }
-    .kpi-value-unit { font-size: 16px; font-weight: 500; color: var(--text-muted); }
-    .kpi-footer { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
-    .kpi-hint { font-size: 11px; color: var(--text-muted); }
 
-    /* ── Badges ── */
-    .badge {
-      display: inline-flex; align-items: center;
-      padding: 3px 9px; border-radius: 999px;
-      font-size: 11px; font-weight: 600; white-space: nowrap;
+    /* ── CHART GRID ──────────────────────────────────────────────── */
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 20px;
     }
-    .badge-emerald { background: var(--emerald-bg); color: #00875f; }
-    .badge-amber   { background: var(--amber-bg);   color: #92400e; }
-    .badge-rose    { background: var(--rose-bg);    color: #c53030; }
-    .badge-blue    { background: var(--blue-light); color: var(--navy-mid); }
-    .badge-navy    { background: #E8EDF7; color: var(--navy); }
 
-    /* ── Grids ── */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-    .mb-24 { margin-bottom: 24px; }
-
-    /* ── Section Headers ── */
-    .section-header { margin-bottom: 16px; }
-    .section-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
-    .section-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-
-    /* ── Chart Containers ── */
-    .chart-wrap { position: relative; width: 100%; }
-    .chart-wrap canvas { display: block; }
-    .chart-sub-title { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; }
-    .chart-divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
-
-    /* ── Data Tables ── */
-    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .data-table th {
-      text-align: left; padding: 10px 14px;
-      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
-      color: var(--text-muted); border-bottom: 2px solid var(--border); background: var(--surface-2);
+    .chart-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border);
     }
-    .data-table th.r, .data-table td.r { text-align: right; }
-    .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-primary); }
-    .data-table tr:nth-child(even) td { background: var(--surface-2); }
-    .data-table tr:last-child td { border-bottom: none; }
-    .data-table .total-row td {
-      font-weight: 700; background: var(--amber-bg) !important;
-      border-top: 2px solid var(--amber); color: var(--text-primary);
-    }
-    .row-num { color: var(--text-muted); font-size: 12px; }
-    .interchange-value { color: #00875f; font-weight: 700; }
 
-    /* ── Method Pills ── */
+    .chart-card.full { grid-column: 1 / -1; }
+
+    .chart-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 3px;
+    }
+
+    .chart-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .chart-wrap { position: relative; }
+
+    /* ── MIGRATION CARD ──────────────────────────────────────────── */
+    .migration-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--amber);
+      box-shadow: var(--shadow-md);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .migration-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 18px;
+    }
+
+    /* ── TABLE ───────────────────────────────────────────────────── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .data-table thead th {
+      text-align: left;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table tbody td {
+      padding: 10px 12px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--surface-2);
+    }
+
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover td { background: var(--surface-2); }
+
+    .data-table tfoot td {
+      padding: 11px 12px;
+      font-weight: 700;
+      color: var(--text-primary);
+      border-top: 2px solid var(--border-2);
+    }
+
     .method-pill {
-      display: inline-flex; align-items: center;
-      padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 9px;
+      border-radius: 20px;
     }
-    .pill-check { background: var(--amber-bg); color: #92400e; }
-    .pill-ach   { background: var(--blue-light); color: var(--navy); }
-    .pill-card  { background: var(--emerald-bg); color: #00875f; }
+    .method-pill.check { background: var(--amber-bg);   color: #B45309; }
+    .method-pill.ach   { background: var(--blue-light); color: var(--navy-mid); }
+    .method-pill.card  { background: var(--emerald-bg); color: #00875F; }
 
-    /* ── Concentration ── */
-    .concentration-stat { text-align: center; padding: 16px 0 4px; }
-    .concentration-pct { font-size: 40px; font-weight: 800; color: var(--navy); line-height: 1; }
-    .concentration-label { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
-
-    /* ── Footer ── */
-    .page-footer {
-      max-width: 1600px; margin: 0 auto; padding: 16px 32px 40px;
-      text-align: center; font-size: 11px; color: var(--text-muted);
+    /* ── RESPONSIVE ──────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .header  { padding: 0 16px; }
+      .tab-bar { padding: 0 16px; overflow-x: auto; }
+      .main    { padding: 16px; }
+      .chart-grid { grid-template-columns: 1fr; }
+      .kpi-value  { font-size: 24px; }
     }
   </style>
 </head>
 <body>
 
-<!-- ══════════════ HEADER ══════════════ -->
-<header class="site-header">
-  <div class="header-inner">
-    <div class="logo-mark">F</div>
-    <div class="header-titles">
-      <div class="header-title">Finexio Operations Intelligence</div>
-      <div class="header-subtitle">Executive Dashboard</div>
+  <!-- ── HEADER ──────────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">F</div>
+      <div>
+        <div class="header-title">Finexio Operations Intelligence</div>
+        <div class="header-subtitle">Executive Dashboard</div>
+      </div>
     </div>
-    <div class="header-meta" id="header-meta">Loading…</div>
+    <span class="updated-badge" id="last-updated">Last updated: —</span>
+  </header>
+
+  <!-- ── TAB BAR ─────────────────────────────────────────────────── -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="payment-health">💳 Payment Health</button>
+    <button class="tab-btn" data-tab="customer-portfolio">📊 Customer Portfolio</button>
+    <button class="tab-btn" data-tab="payment-network">🌐 Payment Network</button>
   </div>
-</header>
 
-<!-- ══════════════ TAB NAV ══════════════ -->
-<nav class="tab-nav">
-  <div class="tab-nav-inner">
-    <button class="tab-btn active" data-tab="tab-health"    onclick="showTab('tab-health')">Payment Health</button>
-    <button class="tab-btn"        data-tab="tab-customers" onclick="showTab('tab-customers')">Customer Portfolio</button>
-    <button class="tab-btn"        data-tab="tab-network"   onclick="showTab('tab-network')">Payment Network</button>
-  </div>
-</nav>
+  <!-- ── MAIN ────────────────────────────────────────────────────── -->
+  <main class="main">
 
-<!-- ══════════════ MAIN ══════════════ -->
-<main class="main-content">
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- TAB 1: PAYMENT HEALTH                                      -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div class="tab-panel active" id="panel-payment-health">
 
-  <!-- ─────────── TAB 1: Payment Health ─────────── -->
-  <div id="tab-health" class="tab-panel active">
-
-    <div class="card watch-card">
-      <div class="card-title">System Watch Items</div>
-      <div class="card-subtitle">Algorithmically flagged anomalies requiring attention</div>
-      <div class="watch-items-list" id="watch-items-list"></div>
-    </div>
-
-    <div class="kpi-row kpi-row-4" id="kpis-health"></div>
-
-    <div class="section-header">
-      <div class="section-title">Health Check</div>
-      <div class="section-subtitle">Payment event stage distribution and exception rate trend</div>
-    </div>
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Event Stage Flow</div>
-        <div class="card-subtitle">Distribution of all payment events by lifecycle stage (%)</div>
-        <div class="chart-wrap" style="height:210px"><canvas id="chart-event-stage"></canvas></div>
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-icon">💳</span>
+            <span class="kpi-badge neutral">Active</span>
+          </div>
+          <div class="kpi-value" id="kpi-flight"></div>
+          <div class="kpi-label">Payments in Flight</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-icon">⏱️</span>
+            <span class="kpi-badge" id="kpi-age-badge"></span>
+          </div>
+          <div class="kpi-value" id="kpi-age"></div>
+          <div class="kpi-label">Avg Payment Age</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-icon">⚠️</span>
+            <span class="kpi-badge" id="kpi-exc-badge"></span>
+          </div>
+          <div class="kpi-value" id="kpi-exc"></div>
+          <div class="kpi-label">Exception Rate</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-icon">✅</span>
+            <span class="kpi-badge" id="kpi-settle-badge"></span>
+          </div>
+          <div class="kpi-value" id="kpi-settle"></div>
+          <div class="kpi-label">Settlement Rate</div>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-title">Exception Rate Trend</div>
-        <div class="card-subtitle">12-month rolling — dashed line = 0.20% goal</div>
-        <div class="chart-wrap" style="height:210px"><canvas id="chart-exception-trend"></canvas></div>
+
+      <div class="chart-grid">
+        <div class="chart-card full">
+          <div class="chart-title">Exception Rate Trend</div>
+          <div class="chart-subtitle">Monthly exception rate vs. 0.20% goal line</div>
+          <div class="chart-wrap" style="height:260px">
+            <canvas id="chart-exc-trend"></canvas>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="section-header">
-      <div class="section-title">Payment Lifecycle Analysis</div>
-      <div class="section-subtitle">Age distribution by bucket and refund reason breakdown</div>
-    </div>
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Payment Age Distribution</div>
-        <div class="card-subtitle">Count of payments by days outstanding</div>
-        <div class="chart-wrap" style="height:270px"><canvas id="chart-age-dist"></canvas></div>
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">Payment Age Distribution</div>
+          <div class="chart-subtitle">Count of payments by days since initiation</div>
+          <div class="chart-wrap" style="height:260px">
+            <canvas id="chart-age-dist"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Event Stage Funnel</div>
+          <div class="chart-subtitle">Percentage of payment events by stage</div>
+          <div class="chart-wrap" style="height:260px">
+            <canvas id="chart-stage-funnel"></canvas>
+          </div>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-title">Refund Analysis</div>
-        <div class="card-subtitle">Breakdown of refund reasons by volume and transaction count</div>
-        <div class="chart-sub-title">Top 10 Refund Reasons by Volume ($)</div>
-        <div class="chart-wrap" style="height:230px"><canvas id="chart-refund-volume"></canvas></div>
-        <hr class="chart-divider">
-        <div class="chart-sub-title">Top 10 Refund Reasons by Count</div>
-        <div class="chart-wrap" style="height:230px"><canvas id="chart-refund-count"></canvas></div>
-      </div>
-    </div>
 
-  </div><!-- /tab-health -->
-
-
-  <!-- ─────────── TAB 2: Customer Portfolio ─────────── -->
-  <div id="tab-customers" class="tab-panel">
-
-    <div class="kpi-row kpi-row-3" id="kpis-customers"></div>
-
-    <div class="card mb-24">
-      <div class="card-title">Monthly Payment Volume Trend</div>
-      <div class="card-subtitle">13-month rolling — stacked bars: ACH / Virtual Card / Check · line: total monthly volume</div>
-      <div class="chart-wrap" style="height:290px"><canvas id="chart-volume-trend"></canvas></div>
-    </div>
-
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Top 10 Customers by Volume</div>
-        <div class="card-subtitle">Total payment volume processed (all periods)</div>
-        <div class="chart-wrap" style="height:310px"><canvas id="chart-top-buyers"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Customer Concentration</div>
-        <div class="card-subtitle">Top 10 customers vs. all others by total volume</div>
-        <div class="chart-wrap" style="height:230px"><canvas id="chart-concentration"></canvas></div>
-        <div class="concentration-stat">
-          <div class="concentration-pct" id="concentration-pct">—</div>
-          <div class="concentration-label">Top 10 customers share of total volume</div>
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">Top Refund Reasons by Amount</div>
+          <div class="chart-subtitle">Total refund value per reason (top 10)</div>
+          <div class="chart-wrap" style="height:320px">
+            <canvas id="chart-refund-amt"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Top Refund Reasons by Count</div>
+          <div class="chart-subtitle">Number of refund events per reason (top 10)</div>
+          <div class="chart-wrap" style="height:320px">
+            <canvas id="chart-refund-cnt"></canvas>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">Customer Health Overview</div>
-      <div class="card-subtitle">Top 10 accounts ranked by total payment volume</div>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th style="width:36px">#</th>
-            <th>Customer Name</th>
-            <th class="r">Total Volume</th>
-            <th class="r">Payment Count</th>
-            <th class="r">Avg Payment Size</th>
-          </tr>
-        </thead>
-        <tbody id="customer-table-body"></tbody>
-      </table>
-    </div>
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- TAB 2: CUSTOMER PORTFOLIO                                  -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-customer-portfolio">
 
-  </div><!-- /tab-customers -->
-
-
-  <!-- ─────────── TAB 3: Payment Network ─────────── -->
-  <div id="tab-network" class="tab-panel">
-
-    <div class="kpi-row kpi-row-3" id="kpis-network"></div>
-
-    <div class="card migration-card">
-      <div class="card-title">🎯 Virtual Card Migration Opportunities</div>
-      <div class="card-subtitle">High-volume suppliers currently on Check — prime conversion candidates for virtual card interchange revenue</div>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th style="width:36px">#</th>
-            <th>Supplier</th>
-            <th>Method</th>
-            <th class="r">Total Volume</th>
-            <th class="r">Frequency</th>
-            <th class="r">Est. Interchange (1.5%)</th>
-          </tr>
-        </thead>
-        <tbody id="migration-table-body"></tbody>
-        <tfoot>
-          <tr class="total-row">
-            <td colspan="5" style="font-weight:700">Total Estimated Revenue Opportunity</td>
-            <td class="r interchange-value" id="migration-total">—</td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Top 20 Suppliers by Volume</div>
-        <div class="card-subtitle">Color indicates payment method — Amber=Check · Navy=ACH · Emerald=Card/VAN</div>
-        <div class="chart-wrap" style="height:440px"><canvas id="chart-top-suppliers"></canvas></div>
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-icon">💰</span>
+            <span class="kpi-badge neutral">Volume</span>
+          </div>
+          <div class="kpi-value" id="kpi-port-vol"></div>
+          <div class="kpi-label">Total Payment Volume</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-icon">🏢</span>
+            <span class="kpi-badge neutral">Network</span>
+          </div>
+          <div class="kpi-value" id="kpi-port-suppliers"></div>
+          <div class="kpi-label">Active Suppliers</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-icon">📑</span>
+            <span class="kpi-badge neutral">Count</span>
+          </div>
+          <div class="kpi-value" id="kpi-port-payments"></div>
+          <div class="kpi-label">Total Payments</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-icon">📏</span>
+            <span class="kpi-badge neutral">Avg</span>
+          </div>
+          <div class="kpi-value" id="kpi-port-avg"></div>
+          <div class="kpi-label">Avg Payment Size</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-icon">↩️</span>
+            <span class="kpi-badge amber">Refunds</span>
+          </div>
+          <div class="kpi-value" id="kpi-port-refund"></div>
+          <div class="kpi-label">Refund Amount (Mo)</div>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-title">Payment Method Distribution</div>
-        <div class="card-subtitle">Transaction count share by payment method (all periods)</div>
-        <div class="chart-wrap" style="height:310px"><canvas id="chart-method-dist"></canvas></div>
+
+      <div class="chart-grid">
+        <div class="chart-card full">
+          <div class="chart-title">Monthly Payment Volume by Method</div>
+          <div class="chart-subtitle">ACH, Virtual Card, and Check — past 13 months</div>
+          <div class="chart-wrap" style="height:280px">
+            <canvas id="chart-monthly-stacked"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">Payment Method Mix</div>
+          <div class="chart-subtitle">Total volume share by payment method (all time)</div>
+          <div class="chart-wrap" style="height:290px">
+            <canvas id="chart-method-mix"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Monthly Total Volume Trend</div>
+          <div class="chart-subtitle">Aggregate payment volume by month</div>
+          <div class="chart-wrap" style="height:290px">
+            <canvas id="chart-vol-trend"></canvas>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="card" style="margin-top:0">
-      <div class="card-title">Supplier Payment Profile Matrix</div>
-      <div class="card-subtitle">Top 50 suppliers — X: transaction frequency · Y: avg payment size · Color: payment method</div>
-      <div class="chart-wrap" style="height:440px"><canvas id="chart-scatter"></canvas></div>
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- TAB 3: PAYMENT NETWORK                                     -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-payment-network">
+
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-icon">🏦</span>
+            <span class="kpi-badge neutral">All Methods</span>
+          </div>
+          <div class="kpi-value" id="kpi-net-vol"></div>
+          <div class="kpi-label">Total Supplier Volume</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-icon">🏢</span>
+            <span class="kpi-badge neutral">Tracked</span>
+          </div>
+          <div class="kpi-value" id="kpi-net-count"></div>
+          <div class="kpi-label">Suppliers Tracked</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-icon">📄</span>
+            <span class="kpi-badge rose">At Risk</span>
+          </div>
+          <div class="kpi-value" id="kpi-net-check"></div>
+          <div class="kpi-label">Check Volume at Risk</div>
+        </div>
+      </div>
+
+      <div class="migration-card">
+        <div class="migration-title">🎯 Virtual Card Migration Opportunities</div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Supplier Name</th>
+              <th>Payment Method</th>
+              <th>Total Volume</th>
+              <th>Frequency</th>
+              <th>Est. Interchange (1.5%)</th>
+            </tr>
+          </thead>
+          <tbody id="migration-tbody"></tbody>
+          <tfoot id="migration-tfoot"></tfoot>
+        </table>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card full">
+          <div class="chart-title">Top 20 Suppliers by Volume</div>
+          <div class="chart-subtitle">Amber = Check &nbsp;&middot;&nbsp; Navy = ACH &nbsp;&middot;&nbsp; Emerald = Card/VAN</div>
+          <div class="chart-wrap" style="height:500px">
+            <canvas id="chart-top-suppliers"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">Payment Method Distribution</div>
+          <div class="chart-subtitle">Volume share by payment method across all suppliers</div>
+          <div class="chart-wrap" style="height:300px">
+            <canvas id="chart-net-method-dist"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Supplier Frequency vs. Avg Payment Size</div>
+          <div class="chart-subtitle">Top 50 suppliers by volume — colored by method</div>
+          <div class="chart-wrap" style="height:300px">
+            <canvas id="chart-scatter"></canvas>
+          </div>
+        </div>
+      </div>
     </div>
 
-  </div><!-- /tab-network -->
+  </main>
 
-</main>
-
-<footer class="page-footer">
-  Finexio Operations Intelligence &nbsp;·&nbsp; Data as of <span id="footer-date">—</span> &nbsp;·&nbsp; Powered by Chart.js 4.4.0
-</footer>
-
-
-<!-- ══════════════ DATA FILES ══════════════ -->
-<script src="cbm_insights_data.js"></script>
-<script src="customer_value_data.js"></script>
-<script src="ops_data.js"></script>
-
-<!-- ══════════════ DASHBOARD SCRIPT ══════════════ -->
-<script>
-'use strict';
-
-// ─── Formatters ──────────────────────────────────────────────
-const fmtDollar = n =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
-
-const fmtNum = n =>
-  new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(n);
-
-function fmtCompact(n) {
-  const a = Math.abs(n);
-  if (a >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B';
-  if (a >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
-  if (a >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K';
-  return fmtDollar(n);
-}
-
-function fmtCompactNum(n) {
-  const a = Math.abs(n);
-  if (a >= 1e9) return (n / 1e9).toFixed(1) + 'B';
-  if (a >= 1e6) return (n / 1e6).toFixed(1) + 'M';
-  if (a >= 1e3) return (n / 1e3).toFixed(0) + 'K';
-  return fmtNum(n);
-}
-
-function fmtDate(isoStr) {
-  return new Date(isoStr).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-}
-
-function fmtMonth(m) {
-  const [y, mo] = m.split('-');
-  return new Date(+y, +mo - 1, 1).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
-}
-
-// ─── Colors ──────────────────────────────────────────────────
-const C = {
-  navy:     '#043886',
-  navyMid:  '#0A52C4',
-  blue:     '#169ee3',
-  paleBlue: '#adddf5',
-  emerald:  '#00C48C',
-  amber:    '#F59E0B',
-  rose:     '#E53E3E',
-  muted:    '#8898AA',
-};
-
-const RANK_COLORS = [
-  '#043886','#0A52C4','#1260D4','#1870E0','#169ee3',
-  '#35aee6','#55bde9','#73ccec','#91daf0','#adddf5',
-];
-
-function methodColor(method, alpha) {
-  const a = (alpha !== undefined) ? alpha : 1;
-  const map = {
-    'Check':           `rgba(245,158,11,${a})`,
-    'ACH':             `rgba(4,56,134,${a})`,
-    'Virtual Card':    `rgba(0,196,140,${a})`,
-    'Card/VAN':        `rgba(0,196,140,${a})`,
-    'E-Check':         `rgba(22,158,227,${a})`,
-    'Card by Mail':    `rgba(173,221,245,${a})`,
-    'Finexio Express': `rgba(10,82,196,${a})`,
-    'Wire':            `rgba(136,152,170,${a})`,
-  };
-  return map[method] || `rgba(136,152,170,${a})`;
-}
-
-// ─── Chart Registry ──────────────────────────────────────────
-const CHARTS = {};
-
-function destroyChart(id) {
-  if (CHARTS[id]) { CHARTS[id].destroy(); delete CHARTS[id]; }
-}
-
-function destroyAll() {
-  Object.keys(CHARTS).forEach(destroyChart);
-}
-
-Chart.defaults.font.family = "'Inter', -apple-system, sans-serif";
-Chart.defaults.font.size = 11;
-Chart.defaults.color = '#425466';
-
-// ─── Tab Switching ────────────────────────────────────────────
-let activeTab = 'tab-health';
-
-function showTab(tabId) {
-  if (activeTab === tabId) return;
-  destroyAll();
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById(tabId).classList.add('active');
-  activeTab = tabId;
-  if (tabId === 'tab-health')     initTab1();
-  else if (tabId === 'tab-customers') initTab2();
-  else if (tabId === 'tab-network')   initTab3();
-}
-
-
-// ══════════════════════════════════════════════════════════════
-// TAB 1 · PAYMENT HEALTH
-// ══════════════════════════════════════════════════════════════
-function initTab1() {
-  renderWatchItems();
-  renderKPIs1();
-  renderEventStageFunnel();
-  renderExceptionTrend();
-  renderAgeDistribution();
-  renderRefundCharts();
-}
-
-function computeWatchItems() {
-  const items  = [];
-  const trend  = CBM_INSIGHTS_DATA.exceptionTrend;
-  const age    = CBM_INSIGHTS_DATA.ageDistribution;
-  const refund = CBM_INSIGHTS_DATA.refundAnalysis;
-
-  // 1. Exception rate MoM delta
-  if (trend.length >= 2) {
-    const curr  = trend[0].rate;
-    const prev  = trend[1].rate;
-    const delta = +(curr - prev).toFixed(3);
-    if (delta > 0.05) {
-      items.push({ type: 'critical', icon: '🔴',
-        text: `Exception rate surged +${delta.toFixed(2)}pp MoM — ${curr}% (current) vs ${prev}% (prior month). Immediate review recommended.` });
-    } else if (delta > 0.01) {
-      items.push({ type: 'warning', icon: '⚠️',
-        text: `Exception rate up +${delta.toFixed(2)}pp MoM (${curr}% vs ${prev}% prior month). Monitor for continued pressure.` });
-    } else if (delta < -0.02) {
-      items.push({ type: 'ok', icon: '✅',
-        text: `Exception rate improving — down ${Math.abs(delta).toFixed(2)}pp MoM (${curr}% vs ${prev}%).` });
+  <script src="cbm_insights_data.js"></script>
+  <script src="customer_value_data.js"></script>
+  <script src="ops_data.js"></script>
+  <script>
+    // ── Formatters ──────────────────────────────────────────────
+    function fmtNum(n) {
+      return new Intl.NumberFormat('en-US').format(Math.round(n));
     }
-  }
 
-  // 2. 30+ day payment aging
-  const age30 = age.find(b => b.bucket === '30+ days');
-  if (age30) {
-    const total = age.reduce((s, b) => s + b.count, 0);
-    const pct   = age30.count / total * 100;
-    if (pct > 5) {
-      items.push({ type: 'critical', icon: '🔴',
-        text: `${fmtNum(age30.count)} payments aged 30+ days — ${pct.toFixed(1)}% of all outstanding. Elevated settlement risk.` });
-    } else if (pct > 3) {
-      items.push({ type: 'warning', icon: '⚠️',
-        text: `${fmtNum(age30.count)} payments aged 30+ days (${pct.toFixed(1)}% of all payments). Watch aging trend.` });
+    function fmtCurrency(n) {
+      if (n >= 1e9) return '$' + (n / 1e9).toFixed(1) + 'B';
+      if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
+      if (n >= 1e3) return '$' + (n / 1e3).toFixed(1) + 'K';
+      return '$' + new Intl.NumberFormat('en-US').format(Math.round(n));
     }
-  }
 
-  // 3. Dominant refund reason by dollar
-  const sorted = [...refund.by_reason].sort((a, b) => b.amount - a.amount);
-  if (sorted.length > 0) {
-    const top = sorted[0];
-    const pct = top.amount / refund.total_amount * 100;
-    if (pct > 25) {
-      items.push({ type: 'warning', icon: '⚠️',
-        text: `"${top.reason}" is the largest refund driver — ${pct.toFixed(1)}% of total refund volume (${fmtCompact(top.amount)} of ${fmtCompact(refund.total_amount)}).` });
+    // ── Chart Registry ──────────────────────────────────────────
+    var charts = {};
+
+    function destroyCharts() {
+      var keys = Object.keys(charts);
+      for (var i = 0; i < keys.length; i++) {
+        if (charts[keys[i]]) charts[keys[i]].destroy();
+        delete charts[keys[i]];
+      }
     }
-  }
 
-  if (items.length === 0) {
-    items.push({ type: 'ok', icon: '✅',
-      text: 'All systems nominal — no anomalies detected across exception rate, payment aging, or refund patterns.' });
-  }
-  return items.slice(0, 3);
-}
+    // ── Global Chart Defaults ────────────────────────────────────
+    Chart.defaults.font.family = "'Inter', -apple-system, sans-serif";
+    Chart.defaults.font.size = 12;
+    Chart.defaults.color = '#8898AA';
 
-function renderWatchItems() {
-  const items = computeWatchItems();
-  document.getElementById('watch-items-list').innerHTML = items.map(i =>
-    `<div class="watch-item ${i.type}">
-       <span class="watch-item-icon">${i.icon}</span>
-       <span class="watch-item-text">${i.text}</span>
-     </div>`
-  ).join('');
-}
+    var BF   = { family: "'Inter', -apple-system, sans-serif", size: 12 };
+    var BFSM = { family: "'Inter', -apple-system, sans-serif", size: 11 };
 
-function renderKPIs1() {
-  const k = CBM_INSIGHTS_DATA.kpis;
-  const ageBadge = k.avg_payment_age > 14 ? 'badge-rose'    : k.avg_payment_age > 7  ? 'badge-amber'  : 'badge-emerald';
-  const ageLabel = k.avg_payment_age > 14 ? 'Critical'      : k.avg_payment_age > 7  ? 'Watch'        : 'Good';
-  const exBadge  = k.exception_rate  > 0.35 ? 'badge-rose'  : k.exception_rate  > 0.25 ? 'badge-amber' : 'badge-emerald';
-  const exLabel  = k.exception_rate  > 0.35 ? 'Critical'    : k.exception_rate  > 0.25 ? 'Watch'       : 'On Target';
-  const seBadge  = k.pct_settled     < 95   ? 'badge-rose'  : k.pct_settled     < 97   ? 'badge-amber' : 'badge-emerald';
-  const seLabel  = k.pct_settled     < 95   ? 'Low'         : k.pct_settled     < 97   ? 'Fair'        : 'Strong';
+    function gc() { return { color: '#E3E8EF' }; }
 
-  document.getElementById('kpis-health').innerHTML = `
-    <div class="kpi-card">
-      <div class="kpi-label">Payments in Flight</div>
-      <div class="kpi-value">${fmtNum(k.payments_in_flight)}</div>
-      <div class="kpi-footer">
-        <span class="badge badge-blue">Active</span>
-        <span class="kpi-hint">Total outstanding payments</span>
-      </div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Avg Payment Age</div>
-      <div class="kpi-value">${k.avg_payment_age.toFixed(1)}<span class="kpi-value-unit"> days</span></div>
-      <div class="kpi-footer">
-        <span class="badge ${ageBadge}">${ageLabel}</span>
-        <span class="kpi-hint">Target ≤7 days</span>
-      </div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Exception Rate</div>
-      <div class="kpi-value">${k.exception_rate.toFixed(2)}<span class="kpi-value-unit">%</span></div>
-      <div class="kpi-footer">
-        <span class="badge ${exBadge}">${exLabel}</span>
-        <span class="kpi-hint">Target ≤0.25%</span>
-      </div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Settlement Rate</div>
-      <div class="kpi-value">${k.pct_settled.toFixed(1)}<span class="kpi-value-unit">%</span></div>
-      <div class="kpi-footer">
-        <span class="badge ${seBadge}">${seLabel}</span>
-        <span class="kpi-hint">Target ≥97%</span>
-      </div>
-    </div>`;
-}
+    function tt() {
+      return {
+        backgroundColor: '#0A2540',
+        titleColor: '#FFFFFF',
+        bodyColor: '#CBD5E1',
+        borderColor: 'rgba(255,255,255,0.1)',
+        borderWidth: 1,
+        padding: 10,
+        cornerRadius: 8,
+        titleFont: { family: "'Inter', -apple-system, sans-serif", size: 12, weight: '600' },
+        bodyFont:  { family: "'Inter', -apple-system, sans-serif", size: 12 }
+      };
+    }
 
-function renderEventStageFunnel() {
-  const stages = CBM_INSIGHTS_DATA.eventStageFunnel;
-  const colors = { Disbursement: C.navy, Reissue: C.blue, Refund: C.rose, Funding: C.amber, Processing: C.paleBlue };
-  const ctx = document.getElementById('chart-event-stage').getContext('2d');
-  CHARTS['event-stage'] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['Payment Events'],
-      datasets: stages.map(s => ({
-        label: s.stage, data: [s.pct],
-        backgroundColor: colors[s.stage] || C.muted,
-        borderRadius: 0, borderSkipped: false,
-      })),
-    },
-    options: {
-      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom', labels: { padding: 14, boxWidth: 12 } },
-        tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.raw}%` } },
-      },
-      scales: {
-        x: { stacked: true, max: 100, ticks: { callback: v => v + '%' }, grid: { color: '#E3E8EF' } },
-        y: { stacked: true, ticks: { display: false }, grid: { display: false } },
-      },
-    },
-  });
-}
-
-function renderExceptionTrend() {
-  const raw    = [...CBM_INSIGHTS_DATA.exceptionTrend].reverse();
-  const labels = raw.map(d => fmtMonth(d.month));
-  const rates  = raw.map(d => d.rate);
-  const goal   = raw.map(() => 0.20);
-  const curr   = CBM_INSIGHTS_DATA.kpis.exception_rate;
-  const lc     = curr > 0.35 ? C.rose : curr > 0.25 ? C.amber : C.emerald;
-
-  const ctx  = document.getElementById('chart-exception-trend').getContext('2d');
-  const grad = ctx.createLinearGradient(0, 0, 0, 210);
-  grad.addColorStop(0, lc + '38');
-  grad.addColorStop(1, lc + '00');
-
-  CHARTS['exception-trend'] = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: 'Exception Rate', data: rates,
-          borderColor: lc, backgroundColor: grad, fill: true,
-          tension: 0.35, pointRadius: 4, pointBackgroundColor: lc, borderWidth: 2.5,
-        },
-        {
-          label: 'Goal (0.20%)', data: goal,
-          borderColor: '#E53E3E', borderDash: [6, 4],
-          pointRadius: 0, fill: false, borderWidth: 1.5,
-        },
-      ],
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom', labels: { padding: 14, boxWidth: 12 } },
-        tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.raw}%` } },
-      },
-      scales: {
-        x: { ticks: { font: { size: 10 } }, grid: { color: '#E3E8EF' } },
-        y: { ticks: { callback: v => v + '%' }, grid: { color: '#E3E8EF' } },
-      },
-    },
-  });
-}
-
-function renderAgeDistribution() {
-  const data = CBM_INSIGHTS_DATA.ageDistribution;
-  const bucketColor = {
-    '0-1 days': C.emerald, '1-3 days': C.emerald,
-    '3-7 days': C.paleBlue, '7-14 days': C.amber,
-    '14-30 days': C.rose, '30+ days': '#C53030',
-  };
-  const ctx = document.getElementById('chart-age-dist').getContext('2d');
-  CHARTS['age-dist'] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: data.map(d => d.bucket),
-      datasets: [{
-        label: 'Payment Count', data: data.map(d => d.count),
-        backgroundColor: data.map(d => bucketColor[d.bucket] || C.muted),
-        borderRadius: 6, borderSkipped: false,
-      }],
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: c => ` ${fmtNum(c.raw)} payments` } },
-      },
-      scales: {
-        x: { ticks: { font: { size: 11 } }, grid: { display: false } },
-        y: { ticks: { callback: v => fmtCompactNum(v) }, grid: { color: '#E3E8EF' } },
-      },
-    },
-  });
-}
-
-function renderRefundCharts() {
-  const reasons    = CBM_INSIGHTS_DATA.refundAnalysis.by_reason;
-  const top10Amt   = [...reasons].sort((a, b) => b.amount - a.amount).slice(0, 10);
-  const top10Count = [...reasons].sort((a, b) => b.count  - a.count ).slice(0, 10);
-
-  function makeHBar(canvasId, key, rows, field, labelFn) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    CHARTS[key] = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: rows.map(r => r.reason),
-        datasets: [{
-          label: field === 'amount' ? 'Amount' : 'Count',
-          data: rows.map(r => r[field]),
-          backgroundColor: rows.map((_, i) => RANK_COLORS[i] || C.paleBlue),
-          borderRadius: 4, borderSkipped: false,
-        }],
-      },
-      options: {
-        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: { callbacks: { label: c => ` ${labelFn(c.raw)}` } },
-        },
-        scales: {
-          x: { ticks: { callback: v => labelFn(v), font: { size: 10 } }, grid: { color: '#E3E8EF' } },
-          y: { ticks: { font: { size: 10 } }, grid: { display: false } },
-        },
-      },
+    // ── Tab Switching ────────────────────────────────────────────
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+        document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+        btn.classList.add('active');
+        var id = btn.getAttribute('data-tab');
+        document.getElementById('panel-' + id).classList.add('active');
+        destroyCharts();
+        initTab(id);
+      });
     });
-  }
 
-  makeHBar('chart-refund-volume', 'refund-volume', top10Amt,   'amount', fmtCompact);
-  makeHBar('chart-refund-count',  'refund-count',  top10Count, 'count',  fmtNum);
-}
+    function initTab(id) {
+      if (id === 'payment-health')     initPaymentHealth();
+      else if (id === 'customer-portfolio') initCustomerPortfolio();
+      else if (id === 'payment-network')    initPaymentNetwork();
+    }
 
+    // ════════════════════════════════════════════════════════════
+    // TAB 1 – PAYMENT HEALTH
+    // ════════════════════════════════════════════════════════════
+    function initPaymentHealth() {
+      var kpis = CBM_INSIGHTS_DATA.kpis;
 
-// ══════════════════════════════════════════════════════════════
-// TAB 2 · CUSTOMER PORTFOLIO
-// ══════════════════════════════════════════════════════════════
-function initTab2() {
-  renderKPIs2();
-  renderVolumeTrend();
-  renderTopBuyersChart();
-  renderConcentrationChart();
-  renderCustomerTable();
-}
+      document.getElementById('kpi-flight').textContent = fmtNum(kpis.payments_in_flight);
 
-function renderKPIs2() {
-  const k = CUSTOMER_VALUE_DATA.kpis;
-  document.getElementById('kpis-customers').innerHTML = `
-    <div class="kpi-card">
-      <div class="kpi-label">Total Payment Volume</div>
-      <div class="kpi-value">${fmtCompact(k.total_payment_volume)}</div>
-      <div class="kpi-footer">
-        <span class="badge badge-blue">Current Period</span>
-        <span class="kpi-hint">${fmtNum(k.total_payments)} payments processed</span>
-      </div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Active Customers</div>
-      <div class="kpi-value">${fmtNum(k.active_suppliers)}</div>
-      <div class="kpi-footer">
-        <span class="badge badge-emerald">Active</span>
-        <span class="kpi-hint">Registered suppliers</span>
-      </div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Avg Payment Size</div>
-      <div class="kpi-value">${fmtCompact(k.avg_payment)}</div>
-      <div class="kpi-footer">
-        <span class="badge badge-blue">Per Transaction</span>
-        <span class="kpi-hint">Refunds: ${fmtCompact(k.refund_amount)}</span>
-      </div>
-    </div>`;
-}
+      var age = kpis.avg_payment_age;
+      document.getElementById('kpi-age').textContent = age.toFixed(1) + ' days';
+      var ageBadge = document.getElementById('kpi-age-badge');
+      if (age > 14)     { ageBadge.className = 'kpi-badge rose';    ageBadge.textContent = '↑ Elevated'; }
+      else if (age > 7) { ageBadge.className = 'kpi-badge amber';   ageBadge.textContent = '~ Watch'; }
+      else              { ageBadge.className = 'kpi-badge emerald'; ageBadge.textContent = '✓ Good'; }
 
-function renderVolumeTrend() {
-  const monthly = [...CUSTOMER_VALUE_DATA.monthlyVolume].reverse();
-  const labels  = monthly.map(d => fmtMonth(d.month));
-  const ctx = document.getElementById('chart-volume-trend').getContext('2d');
-  CHARTS['volume-trend'] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        {
-          type: 'bar', label: 'ACH',
-          data: monthly.map(d => d.ach_amount),
-          backgroundColor: 'rgba(4,56,134,0.82)',
-          stack: 'vol', borderRadius: 3, order: 2,
-        },
-        {
-          type: 'bar', label: 'Virtual Card',
-          data: monthly.map(d => d.vc_amount),
-          backgroundColor: 'rgba(0,196,140,0.82)',
-          stack: 'vol', borderRadius: 3, order: 2,
-        },
-        {
-          type: 'bar', label: 'Check',
-          data: monthly.map(d => d.check_amount),
-          backgroundColor: 'rgba(245,158,11,0.82)',
-          stack: 'vol', borderRadius: 3, order: 2,
-        },
-        {
-          type: 'line', label: 'Total Volume',
-          data: monthly.map(d => d.amount),
-          borderColor: C.blue, backgroundColor: 'transparent',
-          pointRadius: 4, pointBackgroundColor: C.blue,
-          tension: 0.3, borderWidth: 2.5, order: 1,
-        },
-      ],
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom', labels: { padding: 14, boxWidth: 12 } },
-        tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${fmtCompact(c.raw)}` } },
-      },
-      scales: {
-        x: { stacked: true, ticks: { font: { size: 10 } }, grid: { display: false } },
-        y: { stacked: true, ticks: { callback: v => fmtCompact(v) }, grid: { color: '#E3E8EF' } },
-      },
-    },
-  });
-}
+      var exc = kpis.exception_rate;
+      document.getElementById('kpi-exc').textContent = exc.toFixed(2) + '%';
+      var excBadge = document.getElementById('kpi-exc-badge');
+      if (exc > 0.35)      { excBadge.className = 'kpi-badge rose';    excBadge.textContent = '↑ High'; }
+      else if (exc > 0.25) { excBadge.className = 'kpi-badge amber';   excBadge.textContent = '~ Watch'; }
+      else                 { excBadge.className = 'kpi-badge emerald'; excBadge.textContent = '✓ Target'; }
 
-function renderTopBuyersChart() {
-  const buyers = CUSTOMER_VALUE_DATA.topBuyers;
-  const labels = buyers.map(b => b.buyer_name.length > 28 ? b.buyer_name.slice(0, 28) + '…' : b.buyer_name);
-  const ctx = document.getElementById('chart-top-buyers').getContext('2d');
-  CHARTS['top-buyers'] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Payment Volume', data: buyers.map(b => b.amount),
-        backgroundColor: C.navy, borderRadius: 4, borderSkipped: false,
-      }],
-    },
-    options: {
-      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            title: c => buyers[c[0].dataIndex].buyer_name,
-            label: c => ` ${fmtCompact(c.raw)}`,
-          },
-        },
-      },
-      scales: {
-        x: { ticks: { callback: v => fmtCompact(v), font: { size: 10 } }, grid: { color: '#E3E8EF' } },
-        y: { ticks: { font: { size: 10 } }, grid: { display: false } },
-      },
-    },
-  });
-}
+      var settle = kpis.pct_settled;
+      document.getElementById('kpi-settle').textContent = settle.toFixed(2) + '%';
+      var settleBadge = document.getElementById('kpi-settle-badge');
+      if (settle < 95)      { settleBadge.className = 'kpi-badge rose';    settleBadge.textContent = '↓ At Risk'; }
+      else if (settle < 97) { settleBadge.className = 'kpi-badge amber';   settleBadge.textContent = '~ Watch'; }
+      else                  { settleBadge.className = 'kpi-badge emerald'; settleBadge.textContent = '✓ On Target'; }
 
-function renderConcentrationChart() {
-  const buyers     = CUSTOMER_VALUE_DATA.topBuyers;
-  const top10      = buyers.reduce((s, b) => s + b.amount, 0);
-  const allMonthly = CUSTOMER_VALUE_DATA.monthlyVolume.reduce((s, m) => s + m.amount, 0);
-  const rest       = Math.max(0, allMonthly - top10);
-  const denom      = top10 + rest;
-  const pct        = (top10 / denom * 100).toFixed(1);
-
-  document.getElementById('concentration-pct').textContent = pct + '%';
-
-  const ctx = document.getElementById('chart-concentration').getContext('2d');
-  CHARTS['concentration'] = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Top 10 Customers', 'All Others'],
-      datasets: [{ data: [top10, rest], backgroundColor: [C.navy, C.paleBlue], borderWidth: 2, borderColor: '#fff' }],
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false, cutout: '68%',
-      plugins: {
-        legend: { position: 'bottom', labels: { padding: 14, boxWidth: 12 } },
-        tooltip: { callbacks: { label: c => ` ${c.label}: ${fmtCompact(c.raw)}` } },
-      },
-    },
-  });
-}
-
-function renderCustomerTable() {
-  const buyers = CUSTOMER_VALUE_DATA.topBuyers;
-  document.getElementById('customer-table-body').innerHTML = buyers.map((b, i) => `
-    <tr>
-      <td class="row-num">${i + 1}</td>
-      <td style="font-weight:600">${b.buyer_name}</td>
-      <td class="r">${fmtCompact(b.amount)}</td>
-      <td class="r">${fmtNum(b.payment_count)}</td>
-      <td class="r">${fmtCompact(b.amount / b.payment_count)}</td>
-    </tr>`).join('');
-}
-
-
-// ══════════════════════════════════════════════════════════════
-// TAB 3 · PAYMENT NETWORK
-// ══════════════════════════════════════════════════════════════
-function initTab3() {
-  renderKPIs3();
-  renderMigrationTable();
-  renderTopSuppliersChart();
-  renderMethodDistributionChart();
-  renderScatterChart();
-}
-
-function renderKPIs3() {
-  const suppliers   = CBM_INSIGHTS_DATA.supplierPropensity;
-  const totalVolume = suppliers.reduce((s, x) => s + x.total_volume, 0);
-  const count       = suppliers.length;
-
-  const mix      = CUSTOMER_VALUE_DATA.paymentMethodMix;
-  const totalTx  = mix.reduce((s, m) => s + m.count, 0);
-  const share    = method => ((mix.find(m => m.method === method)?.count || 0) / totalTx * 100).toFixed(0);
-
-  document.getElementById('kpis-network').innerHTML = `
-    <div class="kpi-card">
-      <div class="kpi-label">Total Supplier Volume</div>
-      <div class="kpi-value">${fmtCompact(totalVolume)}</div>
-      <div class="kpi-footer">
-        <span class="badge badge-blue">All Methods</span>
-        <span class="kpi-hint">${fmtNum(count)} suppliers tracked</span>
-      </div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Suppliers Tracked</div>
-      <div class="kpi-value">${fmtNum(count)}</div>
-      <div class="kpi-footer">
-        <span class="badge badge-navy">In Network</span>
-        <span class="kpi-hint">Active payment relationships</span>
-      </div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Payment Method Mix</div>
-      <div class="kpi-value" style="font-size:18px;line-height:1.6;font-weight:700">
-        <span style="color:${C.amber}">${share('Check')}% Check</span>
-        &nbsp;·&nbsp;<span style="color:${C.navy}">${share('ACH')}% ACH</span>
-        &nbsp;·&nbsp;<span style="color:${C.emerald}">${share('Virtual Card')}% Card</span>
-      </div>
-      <div class="kpi-footer"><span class="badge badge-amber">By Transaction Count</span></div>
-    </div>`;
-}
-
-function renderMigrationTable() {
-  const checkSupps = CBM_INSIGHTS_DATA.supplierPropensity
-    .filter(s => s.method === 'Check')
-    .sort((a, b) => b.total_volume - a.total_volume)
-    .slice(0, 10);
-
-  const totalInterchange = checkSupps.reduce((s, x) => s + x.total_volume * 0.015, 0);
-
-  document.getElementById('migration-table-body').innerHTML = checkSupps.map((s, i) => `
-    <tr>
-      <td class="row-num">${i + 1}</td>
-      <td style="font-weight:600">${s.supplier_name}</td>
-      <td><span class="method-pill pill-check">Check</span></td>
-      <td class="r">${fmtCompact(s.total_volume)}</td>
-      <td class="r">${fmtNum(s.frequency)}</td>
-      <td class="r interchange-value">${fmtCompact(s.total_volume * 0.015)}</td>
-    </tr>`).join('');
-
-  document.getElementById('migration-total').textContent = fmtCompact(totalInterchange);
-}
-
-function renderTopSuppliersChart() {
-  const top20 = [...CBM_INSIGHTS_DATA.supplierPropensity]
-    .sort((a, b) => b.total_volume - a.total_volume)
-    .slice(0, 20);
-
-  const labels = top20.map(s => s.supplier_name.length > 22 ? s.supplier_name.slice(0, 22) + '…' : s.supplier_name);
-  const ctx = document.getElementById('chart-top-suppliers').getContext('2d');
-  CHARTS['top-suppliers'] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Total Volume',
-        data: top20.map(s => s.total_volume),
-        backgroundColor: top20.map(s => methodColor(s.method, 0.88)),
-        borderRadius: 3, borderSkipped: false,
-      }],
-    },
-    options: {
-      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            title: c => top20[c[0].dataIndex].supplier_name,
-            label: c => {
-              const s = top20[c.dataIndex];
-              return [` Volume: ${fmtCompact(s.total_volume)}`, ` Method: ${s.method}`];
+      // Exception Rate Trend
+      var trend = CBM_INSIGHTS_DATA.exceptionTrend.slice().reverse();
+      charts.excTrend = new Chart(document.getElementById('chart-exc-trend'), {
+        type: 'line',
+        data: {
+          labels: trend.map(function(d) { return d.month; }),
+          datasets: [
+            {
+              label: 'Exception Rate (%)',
+              data: trend.map(function(d) { return d.rate; }),
+              borderColor: '#043886',
+              backgroundColor: 'rgba(4,56,134,0.07)',
+              borderWidth: 2.5,
+              pointBackgroundColor: '#043886',
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              fill: true,
+              tension: 0.4
             },
-          },
+            {
+              label: 'Goal (0.20%)',
+              data: trend.map(function() { return 0.20; }),
+              borderColor: '#00C48C',
+              borderWidth: 2,
+              borderDash: [7, 4],
+              pointRadius: 0,
+              fill: false,
+              tension: 0
+            }
+          ]
         },
-      },
-      scales: {
-        x: { ticks: { callback: v => fmtCompact(v), font: { size: 10 } }, grid: { color: '#E3E8EF' } },
-        y: { ticks: { font: { size: 9 } }, grid: { display: false } },
-      },
-    },
-  });
-}
-
-function renderMethodDistributionChart() {
-  const mix    = CUSTOMER_VALUE_DATA.paymentMethodMix;
-  const labels = mix.map(m => m.method);
-  const counts = mix.map(m => m.count);
-  const colors = mix.map(m => methodColor(m.method, 0.9));
-  const total  = counts.reduce((a, b) => a + b, 0);
-  const ctx = document.getElementById('chart-method-dist').getContext('2d');
-  CHARTS['method-dist'] = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{ data: counts, backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }],
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false, cutout: '62%',
-      plugins: {
-        legend: { position: 'bottom', labels: { padding: 12, boxWidth: 12 } },
-        tooltip: {
-          callbacks: {
-            label: c => ` ${c.label}: ${fmtNum(c.raw)} (${(c.raw / total * 100).toFixed(1)}%)`,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { font: BF, padding: 16, usePointStyle: true, pointStyleWidth: 8 } },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: {
+                label: function(ctx) { return '  ' + ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(2) + '%'; }
+              }
+            })
           },
+          scales: {
+            x: { grid: gc(), ticks: { font: BFSM } },
+            y: {
+              grid: gc(),
+              suggestedMin: 0,
+              suggestedMax: 0.55,
+              ticks: { font: BFSM, callback: function(v) { return v.toFixed(2) + '%'; } }
+            }
+          }
+        }
+      });
+
+      // Payment Age Distribution
+      var ageDist = CBM_INSIGHTS_DATA.ageDistribution;
+      var ageColors = ageDist.map(function(d) {
+        if (d.bucket === '0-1 days' || d.bucket === '1-3 days') return '#00C48C';
+        if (d.bucket === '3-7 days')  return '#169ee3';
+        if (d.bucket === '7-14 days') return '#F59E0B';
+        return '#E53E3E';
+      });
+      charts.ageDist = new Chart(document.getElementById('chart-age-dist'), {
+        type: 'bar',
+        data: {
+          labels: ageDist.map(function(d) { return d.bucket; }),
+          datasets: [{
+            label: 'Payments',
+            data: ageDist.map(function(d) { return d.count; }),
+            backgroundColor: ageColors,
+            borderRadius: 5
+          }]
         },
-      },
-    },
-  });
-}
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: { label: function(ctx) { return '  ' + fmtNum(ctx.parsed.y) + ' payments'; } }
+            })
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { font: BFSM } },
+            y: { grid: gc(), ticks: { font: BFSM, callback: function(v) { return fmtNum(v); } } }
+          }
+        }
+      });
 
-function renderScatterChart() {
-  const top50 = [...CBM_INSIGHTS_DATA.supplierPropensity]
-    .sort((a, b) => b.total_volume - a.total_volume)
-    .slice(0, 50);
+      // Event Stage Funnel
+      var funnel = CBM_INSIGHTS_DATA.eventStageFunnel;
+      charts.stageFunnel = new Chart(document.getElementById('chart-stage-funnel'), {
+        type: 'bar',
+        data: {
+          labels: funnel.map(function(d) { return d.stage; }),
+          datasets: [{
+            label: '% of Events',
+            data: funnel.map(function(d) { return d.pct; }),
+            backgroundColor: funnel.map(function(d) { return d.stage === 'Disbursement' ? '#043886' : '#169ee3'; }),
+            borderRadius: 4
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: { label: function(ctx) { return '  ' + ctx.parsed.x.toFixed(2) + '% of all events'; } }
+            })
+          },
+          scales: {
+            x: { grid: gc(), ticks: { font: BFSM, callback: function(v) { return v + '%'; } } },
+            y: { grid: { display: false }, ticks: { font: BFSM } }
+          }
+        }
+      });
 
-  const groups = {};
-  top50.forEach(s => {
-    if (!groups[s.method]) groups[s.method] = [];
-    groups[s.method].push({
-      x: s.frequency, y: s.avg_size,
-      supplierName: s.supplier_name, method: s.method,
-      total_volume: s.total_volume, frequency: s.frequency, avg_size: s.avg_size,
+      // Refund by Amount (top 10)
+      var byAmt = CBM_INSIGHTS_DATA.refundAnalysis.by_reason.slice()
+        .sort(function(a, b) { return b.amount - a.amount; }).slice(0, 10);
+      charts.refundAmt = new Chart(document.getElementById('chart-refund-amt'), {
+        type: 'bar',
+        data: {
+          labels: byAmt.map(function(d) { return d.reason; }),
+          datasets: [{
+            label: 'Refund Amount',
+            data: byAmt.map(function(d) { return d.amount; }),
+            backgroundColor: '#043886',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: { label: function(ctx) { return '  ' + fmtCurrency(ctx.parsed.x); } }
+            })
+          },
+          scales: {
+            x: { grid: gc(), ticks: { font: BFSM, callback: function(v) { return fmtCurrency(v); } } },
+            y: { grid: { display: false }, ticks: { font: BFSM } }
+          }
+        }
+      });
+
+      // Refund by Count (top 10)
+      var byCnt = CBM_INSIGHTS_DATA.refundAnalysis.by_reason.slice()
+        .sort(function(a, b) { return b.count - a.count; }).slice(0, 10);
+      charts.refundCnt = new Chart(document.getElementById('chart-refund-cnt'), {
+        type: 'bar',
+        data: {
+          labels: byCnt.map(function(d) { return d.reason; }),
+          datasets: [{
+            label: 'Refund Count',
+            data: byCnt.map(function(d) { return d.count; }),
+            backgroundColor: '#169ee3',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: { label: function(ctx) { return '  ' + fmtNum(ctx.parsed.x) + ' refunds'; } }
+            })
+          },
+          scales: {
+            x: { grid: gc(), ticks: { font: BFSM, callback: function(v) { return fmtNum(v); } } },
+            y: { grid: { display: false }, ticks: { font: BFSM } }
+          }
+        }
+      });
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // TAB 2 – CUSTOMER PORTFOLIO
+    // ════════════════════════════════════════════════════════════
+    function initCustomerPortfolio() {
+      var kpis = CUSTOMER_VALUE_DATA.kpis;
+      document.getElementById('kpi-port-vol').textContent      = fmtCurrency(kpis.total_payment_volume);
+      document.getElementById('kpi-port-suppliers').textContent = fmtNum(kpis.active_suppliers);
+      document.getElementById('kpi-port-payments').textContent  = fmtNum(kpis.total_payments);
+      document.getElementById('kpi-port-avg').textContent       = fmtCurrency(kpis.avg_payment);
+      document.getElementById('kpi-port-refund').textContent    = fmtCurrency(kpis.refund_amount);
+
+      // Monthly Stacked Bar
+      var monthly = CUSTOMER_VALUE_DATA.monthlyVolume.slice().reverse();
+      charts.monthlyStacked = new Chart(document.getElementById('chart-monthly-stacked'), {
+        type: 'bar',
+        data: {
+          labels: monthly.map(function(d) { return d.month; }),
+          datasets: [
+            {
+              label: 'ACH',
+              data: monthly.map(function(d) { return d.ach_amount; }),
+              backgroundColor: '#043886',
+              borderRadius: 0
+            },
+            {
+              label: 'Virtual Card',
+              data: monthly.map(function(d) { return d.vc_amount; }),
+              backgroundColor: '#00C48C',
+              borderRadius: 0
+            },
+            {
+              label: 'Check',
+              data: monthly.map(function(d) { return d.check_amount; }),
+              backgroundColor: '#F59E0B',
+              borderRadius: 0
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { font: BF, padding: 16, usePointStyle: true, pointStyleWidth: 8 } },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: { label: function(ctx) { return '  ' + ctx.dataset.label + ': ' + fmtCurrency(ctx.parsed.y); } }
+            })
+          },
+          scales: {
+            x: { stacked: true, grid: { display: false }, ticks: { font: BFSM } },
+            y: { stacked: true, grid: gc(), ticks: { font: BFSM, callback: function(v) { return fmtCurrency(v); } } }
+          }
+        }
+      });
+
+      // Payment Method Mix Donut
+      var mix = CUSTOMER_VALUE_DATA.paymentMethodMix;
+      var palette = {
+        'ACH': '#043886', 'Check': '#F59E0B', 'Virtual Card': '#00C48C',
+        'E-Check': '#adddf5', 'Card by Mail': '#169ee3',
+        'Finexio Express': '#0A52C4', 'Wire': '#8898AA'
+      };
+      charts.methodMix = new Chart(document.getElementById('chart-method-mix'), {
+        type: 'doughnut',
+        data: {
+          labels: mix.map(function(d) { return d.method; }),
+          datasets: [{
+            data: mix.map(function(d) { return d.amount; }),
+            backgroundColor: mix.map(function(d) { return palette[d.method] || '#8898AA'; }),
+            borderWidth: 3,
+            borderColor: '#fff',
+            hoverOffset: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '62%',
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                font: BF, padding: 10, usePointStyle: true, pointStyleWidth: 8,
+                generateLabels: function(chart) {
+                  var data = chart.data.datasets[0].data;
+                  var total = data.reduce(function(a, b) { return a + b; }, 0);
+                  return chart.data.labels.map(function(label, i) {
+                    return {
+                      text: label + '  ' + ((data[i] / total) * 100).toFixed(1) + '%',
+                      fillStyle: chart.data.datasets[0].backgroundColor[i],
+                      strokeStyle: chart.data.datasets[0].backgroundColor[i],
+                      pointStyle: 'circle',
+                      index: i
+                    };
+                  });
+                }
+              }
+            },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: { label: function(ctx) { return '  ' + ctx.label + ': ' + fmtCurrency(ctx.parsed); } }
+            })
+          }
+        }
+      });
+
+      // Monthly Total Volume Line
+      charts.volTrend = new Chart(document.getElementById('chart-vol-trend'), {
+        type: 'line',
+        data: {
+          labels: monthly.map(function(d) { return d.month; }),
+          datasets: [{
+            label: 'Total Volume',
+            data: monthly.map(function(d) { return d.amount; }),
+            borderColor: '#043886',
+            backgroundColor: 'rgba(4,56,134,0.07)',
+            borderWidth: 2.5,
+            pointBackgroundColor: '#043886',
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: { label: function(ctx) { return '  ' + fmtCurrency(ctx.parsed.y); } }
+            })
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { font: BFSM } },
+            y: { grid: gc(), ticks: { font: BFSM, callback: function(v) { return fmtCurrency(v); } } }
+          }
+        }
+      });
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // TAB 3 – PAYMENT NETWORK
+    // ════════════════════════════════════════════════════════════
+    function initPaymentNetwork() {
+      var suppliers = CBM_INSIGHTS_DATA.supplierPropensity;
+
+      var totalVol = suppliers.reduce(function(s, r) { return s + r.total_volume; }, 0);
+      var checkVol = suppliers.filter(function(r) { return r.method === 'Check'; })
+                              .reduce(function(s, r) { return s + r.total_volume; }, 0);
+      document.getElementById('kpi-net-vol').textContent   = fmtCurrency(totalVol);
+      document.getElementById('kpi-net-count').textContent = fmtNum(suppliers.length);
+      document.getElementById('kpi-net-check').textContent = fmtCurrency(checkVol);
+
+      // Migration Table
+      var checkTop10 = suppliers.filter(function(r) { return r.method === 'Check'; })
+        .sort(function(a, b) { return b.total_volume - a.total_volume; }).slice(0, 10);
+
+      var tbody = document.getElementById('migration-tbody');
+      tbody.innerHTML = '';
+      var footerVol = 0, footerInterchange = 0;
+
+      checkTop10.forEach(function(s) {
+        var interchange = s.total_volume * 0.015;
+        footerVol += s.total_volume;
+        footerInterchange += interchange;
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td>' + s.supplier_name + '</td>' +
+          '<td><span class="method-pill check">Check</span></td>' +
+          '<td>' + fmtCurrency(s.total_volume) + '</td>' +
+          '<td>' + fmtNum(s.frequency) + '</td>' +
+          '<td><strong>' + fmtCurrency(interchange) + '</strong></td>';
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('migration-tfoot').innerHTML =
+        '<tr>' +
+          '<td colspan="2">Total — Top 10 Check Suppliers</td>' +
+          '<td>' + fmtCurrency(footerVol) + '</td>' +
+          '<td></td>' +
+          '<td>' + fmtCurrency(footerInterchange) + '</td>' +
+        '</tr>';
+
+      // Top 20 Suppliers Horizontal Bar
+      var top20 = suppliers.slice().sort(function(a, b) { return b.total_volume - a.total_volume; }).slice(0, 20);
+      function mColor(m) {
+        if (m === 'Check') return '#F59E0B';
+        if (m === 'ACH')   return '#043886';
+        return '#00C48C';
+      }
+      charts.topSuppliers = new Chart(document.getElementById('chart-top-suppliers'), {
+        type: 'bar',
+        data: {
+          labels: top20.map(function(s) { return s.supplier_name; }),
+          datasets: [{
+            label: 'Total Volume',
+            data: top20.map(function(s) { return s.total_volume; }),
+            backgroundColor: top20.map(function(s) { return mColor(s.method); }),
+            borderRadius: 3
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: {
+                label: function(ctx) {
+                  var s = top20[ctx.dataIndex];
+                  return [
+                    '  Volume: '    + fmtCurrency(ctx.parsed.x),
+                    '  Method: '    + s.method,
+                    '  Frequency: ' + fmtNum(s.frequency)
+                  ];
+                }
+              }
+            })
+          },
+          scales: {
+            x: { grid: gc(), ticks: { font: BFSM, callback: function(v) { return fmtCurrency(v); } } },
+            y: { grid: { display: false }, ticks: { font: BFSM } }
+          }
+        }
+      });
+
+      // Method Distribution Donut
+      var volByMethod = {};
+      suppliers.forEach(function(s) {
+        var key = (s.method === 'Virtual Card' || s.method === 'VAN' || s.method === 'Card by Mail')
+          ? 'Card/VAN' : s.method;
+        volByMethod[key] = (volByMethod[key] || 0) + s.total_volume;
+      });
+      var methodEntries = Object.entries(volByMethod).sort(function(a, b) { return b[1] - a[1]; });
+      var donutPalette = { 'ACH': '#043886', 'Check': '#F59E0B', 'Card/VAN': '#00C48C' };
+
+      charts.netMethodDist = new Chart(document.getElementById('chart-net-method-dist'), {
+        type: 'doughnut',
+        data: {
+          labels: methodEntries.map(function(e) { return e[0]; }),
+          datasets: [{
+            data: methodEntries.map(function(e) { return e[1]; }),
+            backgroundColor: methodEntries.map(function(e) { return donutPalette[e[0]] || '#8898AA'; }),
+            borderWidth: 3,
+            borderColor: '#fff',
+            hoverOffset: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '60%',
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                font: BF, padding: 12, usePointStyle: true, pointStyleWidth: 8,
+                generateLabels: function(chart) {
+                  var data = chart.data.datasets[0].data;
+                  var total = data.reduce(function(a, b) { return a + b; }, 0);
+                  return chart.data.labels.map(function(label, i) {
+                    return {
+                      text: label + '  ' + ((data[i] / total) * 100).toFixed(1) + '%',
+                      fillStyle: chart.data.datasets[0].backgroundColor[i],
+                      strokeStyle: chart.data.datasets[0].backgroundColor[i],
+                      pointStyle: 'circle',
+                      index: i
+                    };
+                  });
+                }
+              }
+            },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: { label: function(ctx) { return '  ' + ctx.label + ': ' + fmtCurrency(ctx.parsed); } }
+            })
+          }
+        }
+      });
+
+      // Scatter: top 50 by volume
+      var top50 = suppliers.slice().sort(function(a, b) { return b.total_volume - a.total_volume; }).slice(0, 50);
+      function scatterDataset(label, filterFn, bg) {
+        return {
+          label: label,
+          data: top50.filter(filterFn).map(function(s) {
+            return { x: s.frequency, y: s.avg_size, _name: s.supplier_name, _vol: s.total_volume };
+          }),
+          backgroundColor: bg,
+          pointRadius: 7,
+          pointHoverRadius: 9
+        };
+      }
+      charts.scatter = new Chart(document.getElementById('chart-scatter'), {
+        type: 'scatter',
+        data: {
+          datasets: [
+            scatterDataset('Check',    function(s) { return s.method === 'Check'; }, 'rgba(245,158,11,0.75)'),
+            scatterDataset('ACH',      function(s) { return s.method === 'ACH'; },   'rgba(4,56,134,0.75)'),
+            scatterDataset('Card/VAN', function(s) { return s.method !== 'Check' && s.method !== 'ACH'; }, 'rgba(0,196,140,0.75)')
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { font: BF, padding: 12, usePointStyle: true, pointStyleWidth: 8 } },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: {
+                title: function() { return []; },
+                label: function(ctx) {
+                  var p = ctx.raw;
+                  return [
+                    '  ' + p._name,
+                    '  Method: ' + ctx.dataset.label + '  |  Vol: ' + fmtCurrency(p._vol),
+                    '  Freq: ' + fmtNum(p.x) + '  |  Avg: ' + fmtCurrency(p.y)
+                  ];
+                }
+              }
+            })
+          },
+          scales: {
+            x: {
+              grid: gc(),
+              title: { display: true, text: 'Payment Frequency', font: { family: "'Inter', -apple-system, sans-serif", size: 12, weight: '600' } },
+              ticks: { font: BFSM, callback: function(v) { return fmtNum(v); } }
+            },
+            y: {
+              grid: gc(),
+              title: { display: true, text: 'Avg Payment Size', font: { family: "'Inter', -apple-system, sans-serif", size: 12, weight: '600' } },
+              ticks: { font: BFSM, callback: function(v) { return fmtCurrency(v); } }
+            }
+          }
+        }
+      });
+    }
+
+    // ── Bootstrap ────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', function() {
+      var ts = new Date('2026-03-24T20:12:58Z');
+      document.getElementById('last-updated').textContent =
+        'Last updated: ' +
+        ts.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) +
+        ' \u00b7 ' +
+        ts.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
+      initTab('payment-health');
     });
-  });
-
-  const datasets = Object.entries(groups).map(([method, pts]) => ({
-    label: method, data: pts,
-    backgroundColor: methodColor(method, 0.72),
-    pointRadius: 6, pointHoverRadius: 9,
-  }));
-
-  const quadrantPlugin = {
-    id: 'quadrantLabels',
-    afterDraw(chart) {
-      const { ctx, chartArea } = chart;
-      if (!chartArea) return;
-      ctx.save();
-      ctx.font = '500 11px Inter, sans-serif';
-      ctx.fillStyle = 'rgba(136,152,170,0.5)';
-      ctx.textAlign = 'right';
-      ctx.fillText('High Value, High Frequency', chartArea.right - 10, chartArea.top + 18);
-      ctx.textAlign = 'left';
-      ctx.fillText('Large Payments, Low Frequency', chartArea.left + 10, chartArea.top + 18);
-      ctx.textAlign = 'right';
-      ctx.fillText('Small Payments, High Frequency', chartArea.right - 10, chartArea.bottom - 10);
-      ctx.textAlign = 'left';
-      ctx.fillText('Small, Infrequent', chartArea.left + 10, chartArea.bottom - 10);
-      ctx.restore();
-    },
-  };
-
-  const ctx = document.getElementById('chart-scatter').getContext('2d');
-  CHARTS['scatter'] = new Chart(ctx, {
-    type: 'scatter',
-    data: { datasets },
-    plugins: [quadrantPlugin],
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'bottom', labels: { padding: 14, boxWidth: 12 } },
-        tooltip: {
-          callbacks: {
-            label(c) {
-              const d = c.raw;
-              return [
-                ` ${d.supplierName}`,
-                ` Method: ${d.method}`,
-                ` Volume: ${fmtCompact(d.total_volume)}`,
-                ` Frequency: ${fmtNum(d.frequency)} txns`,
-                ` Avg Size: ${fmtCompact(d.avg_size)}`,
-              ];
-            },
-          },
-        },
-      },
-      scales: {
-        x: {
-          title: { display: true, text: 'Transaction Frequency', font: { size: 11, weight: '600' }, color: '#425466' },
-          ticks: { callback: v => fmtNum(v), font: { size: 10 } },
-          grid: { color: '#E3E8EF' },
-        },
-        y: {
-          title: { display: true, text: 'Avg Payment Size ($)', font: { size: 11, weight: '600' }, color: '#425466' },
-          ticks: { callback: v => fmtCompact(v), font: { size: 10 } },
-          grid: { color: '#E3E8EF' },
-        },
-      },
-    },
-  });
-}
-
-
-// ══════════════════════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════════════════════
-(function init() {
-  const lu        = CBM_INSIGHTS_DATA.lastUpdated;
-  const formatted = fmtDate(lu);
-  document.getElementById('header-meta').innerHTML = `Last updated<br><strong>${formatted}</strong>`;
-  document.getElementById('footer-date').textContent = formatted;
-  initTab1();
-})();
-</script>
+  </script>
 </body>
 </html>
