@@ -326,6 +326,8 @@
     <button class="tab-btn active" data-tab="payment-health">💳 Payment Health</button>
     <button class="tab-btn" data-tab="customer-portfolio">📊 Customer Portfolio</button>
     <button class="tab-btn" data-tab="payment-network">🌐 Payment Network</button>
+    <button class="tab-btn" data-tab="buyer-intelligence">🏢 Buyer Intelligence</button>
+    <button class="tab-btn" data-tab="ops-cases">⚙️ Ops &amp; Cases</button>
   </div>
 
   <!-- ── MAIN ────────────────────────────────────────────────────── -->
@@ -569,6 +571,133 @@
       </div>
     </div>
 
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- TAB 4: BUYER INTELLIGENCE                                  -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-buyer-intelligence">
+
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-icon">🏆</span><span class="kpi-badge neutral">Top Buyer</span></div>
+          <div class="kpi-value" id="kpi-top-buyer-vol"></div>
+          <div class="kpi-label" id="kpi-top-buyer-name">Largest Buyer by Volume</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-icon">📑</span><span class="kpi-badge neutral">Top Buyer</span></div>
+          <div class="kpi-value" id="kpi-top-buyer-count"></div>
+          <div class="kpi-label">Payments from #1 Buyer</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-icon">🏦</span><span class="kpi-badge amber">Check Risk</span></div>
+          <div class="kpi-value" id="kpi-check-pct"></div>
+          <div class="kpi-label">Payments Still by Check</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-icon">💳</span><span class="kpi-badge emerald">vCard</span></div>
+          <div class="kpi-value" id="kpi-vcard-pct"></div>
+          <div class="kpi-label">Virtual Card Adoption</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-icon">🌐</span><span class="kpi-badge neutral">ACH</span></div>
+          <div class="kpi-value" id="kpi-ach-pct"></div>
+          <div class="kpi-label">ACH Share</div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card full">
+          <div class="chart-title">Top 10 Buyers by Payment Volume</div>
+          <div class="chart-subtitle">Total payment volume processed — all time</div>
+          <div class="chart-wrap" style="height:340px">
+            <canvas id="chart-top-buyers"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">Payment Method Mix by Count</div>
+          <div class="chart-subtitle">Number of payments by method (not volume)</div>
+          <div class="chart-wrap" style="height:300px">
+            <canvas id="chart-method-count-donut"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Top States by Supplier Count</div>
+          <div class="chart-subtitle">Active supplier network geographic distribution</div>
+          <div class="chart-wrap" style="height:300px">
+            <canvas id="chart-state-dist"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- TAB 5: OPS & CASES                                         -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-ops-cases">
+
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-icon">⚙️</span><span class="kpi-badge neutral">Processing</span></div>
+          <div class="kpi-value" id="kpi-ops-processing"></div>
+          <div class="kpi-label">Payments Processing</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-icon">📋</span><span class="kpi-badge amber">Pending</span></div>
+          <div class="kpi-value" id="kpi-ops-refunds-pending"></div>
+          <div class="kpi-label">Refunds Pending</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-icon">🗂️</span><span class="kpi-badge rose">Open Cases</span></div>
+          <div class="kpi-value" id="kpi-ops-open-cases"></div>
+          <div class="kpi-label">Open Cases</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-icon">⚡</span><span class="kpi-badge neutral">Mix</span></div>
+          <div class="kpi-value" id="kpi-ops-enrollment-pct"></div>
+          <div class="kpi-label">Cases: Enrollment Delays</div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card full">
+          <div class="chart-title">New Cases Opened — Monthly Trend</div>
+          <div class="chart-subtitle">Support case volume over the past 12 months</div>
+          <div class="chart-wrap" style="height:260px">
+            <canvas id="chart-cases-monthly"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">Top Refund Reasons by Total Amount</div>
+          <div class="chart-subtitle">OPS_DATA refund breakdown — top 12 by $ value</div>
+          <div class="chart-wrap" style="height:360px">
+            <canvas id="chart-ops-refund-amt"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Top Refund Reasons by Count</div>
+          <div class="chart-subtitle">OPS_DATA refund breakdown — top 12 by event count</div>
+          <div class="chart-wrap" style="height:360px">
+            <canvas id="chart-ops-refund-cnt"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card full">
+          <div class="chart-title">Payment Event Stage Distribution</div>
+          <div class="chart-subtitle">Lifecycle event counts across all payment workflows</div>
+          <div class="chart-wrap" style="height:300px">
+            <canvas id="chart-event-stages"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <script src="cbm_insights_data.js"></script>
@@ -636,9 +765,11 @@
     });
 
     function initTab(id) {
-      if (id === 'payment-health')     initPaymentHealth();
+      if (id === 'payment-health')          initPaymentHealth();
       else if (id === 'customer-portfolio') initCustomerPortfolio();
       else if (id === 'payment-network')    initPaymentNetwork();
+      else if (id === 'buyer-intelligence') initBuyerIntelligence();
+      else if (id === 'ops-cases')          initOpsCases();
     }
 
     // ════════════════════════════════════════════════════════════
@@ -1188,9 +1319,297 @@
       });
     }
 
+    // ════════════════════════════════════════════════════════════
+    // TAB 4 – BUYER INTELLIGENCE
+    // ════════════════════════════════════════════════════════════
+    function initBuyerIntelligence() {
+      var buyers = CUSTOMER_VALUE_DATA.topBuyers;
+      var methods = CUSTOMER_VALUE_DATA.supplierStats.method_breakdown;
+
+      // KPIs
+      var topBuyer = buyers[0];
+      document.getElementById('kpi-top-buyer-vol').textContent   = fmtCurrency(topBuyer.amount);
+      document.getElementById('kpi-top-buyer-name').textContent  = topBuyer.buyer_name;
+      document.getElementById('kpi-top-buyer-count').textContent = fmtNum(topBuyer.payment_count);
+
+      var totalByCount = methods.reduce(function(s, m) { return s + m.count; }, 0);
+      function methodPct(name) {
+        var m = methods.find(function(x) { return x.method === name; });
+        return m ? (m.count / totalByCount * 100).toFixed(1) + '%' : '—';
+      }
+      document.getElementById('kpi-check-pct').textContent  = methodPct('Check');
+      document.getElementById('kpi-vcard-pct').textContent  = methodPct('Virtual Card');
+      document.getElementById('kpi-ach-pct').textContent    = methodPct('ACH');
+
+      // Top 10 Buyers Bar
+      var top10 = buyers.slice(0, 10);
+      charts.topBuyers = new Chart(document.getElementById('chart-top-buyers'), {
+        type: 'bar',
+        data: {
+          labels: top10.map(function(b) { return b.buyer_name; }),
+          datasets: [{
+            label: 'Payment Volume',
+            data: top10.map(function(b) { return b.amount; }),
+            backgroundColor: top10.map(function(_, i) {
+              var alpha = 1 - (i * 0.06);
+              return 'rgba(4,56,134,' + alpha + ')';
+            }),
+            borderRadius: 4
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: {
+                label: function(ctx) {
+                  var b = top10[ctx.dataIndex];
+                  return ['  Volume: ' + fmtCurrency(ctx.parsed.x), '  Payments: ' + fmtNum(b.payment_count)];
+                }
+              }
+            })
+          },
+          scales: {
+            x: { grid: gc(), ticks: { font: BFSM, callback: function(v) { return fmtCurrency(v); } } },
+            y: { grid: { display: false }, ticks: { font: BFSM } }
+          }
+        }
+      });
+
+      // Method mix by COUNT donut
+      var countPalette = {
+        'ACH': '#043886', 'Check': '#F59E0B', 'Virtual Card': '#00C48C',
+        'E-Check': '#adddf5', 'Card by Mail': '#169ee3',
+        'Finexio Express': '#0A52C4', 'Wire': '#8898AA'
+      };
+      charts.methodCountDonut = new Chart(document.getElementById('chart-method-count-donut'), {
+        type: 'doughnut',
+        data: {
+          labels: methods.map(function(m) { return m.method; }),
+          datasets: [{
+            data: methods.map(function(m) { return m.count; }),
+            backgroundColor: methods.map(function(m) { return countPalette[m.method] || '#8898AA'; }),
+            borderWidth: 3,
+            borderColor: '#fff',
+            hoverOffset: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '62%',
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                font: BF, padding: 10, usePointStyle: true, pointStyleWidth: 8,
+                generateLabels: function(chart) {
+                  var data = chart.data.datasets[0].data;
+                  var total = data.reduce(function(a, b) { return a + b; }, 0);
+                  return chart.data.labels.map(function(label, i) {
+                    return {
+                      text: label + '  ' + ((data[i] / total) * 100).toFixed(1) + '%',
+                      fillStyle: chart.data.datasets[0].backgroundColor[i],
+                      strokeStyle: chart.data.datasets[0].backgroundColor[i],
+                      pointStyle: 'circle',
+                      index: i
+                    };
+                  });
+                }
+              }
+            },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: { label: function(ctx) { return '  ' + ctx.label + ': ' + fmtNum(ctx.parsed) + ' payments'; } }
+            })
+          }
+        }
+      });
+
+      // State distribution bar
+      var states = CUSTOMER_VALUE_DATA.supplierStats.state_distribution.slice(0, 15);
+      charts.stateDist = new Chart(document.getElementById('chart-state-dist'), {
+        type: 'bar',
+        data: {
+          labels: states.map(function(s) { return s.state; }),
+          datasets: [{
+            label: 'Suppliers',
+            data: states.map(function(s) { return s.count; }),
+            backgroundColor: '#169ee3',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: { label: function(ctx) { return '  ' + fmtNum(ctx.parsed.y) + ' suppliers'; } }
+            })
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { font: BFSM } },
+            y: { grid: gc(), ticks: { font: BFSM, callback: function(v) { return fmtNum(v); } } }
+          }
+        }
+      });
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // TAB 5 – OPS & CASES
+    // ════════════════════════════════════════════════════════════
+    function initOpsCases() {
+      var kpis = OPS_DATA.kpis;
+      var cases = OPS_DATA.caseBreakdown;
+      var refunds = OPS_DATA.refundDetails;
+      var events = OPS_DATA.paymentEventTimeline;
+
+      // KPIs
+      document.getElementById('kpi-ops-processing').textContent      = fmtNum(kpis.payments_processing);
+      document.getElementById('kpi-ops-refunds-pending').textContent  = fmtNum(kpis.refunds_pending);
+      var totalCases = cases.by_type.reduce(function(s, c) { return s + c.count; }, 0);
+      document.getElementById('kpi-ops-open-cases').textContent = fmtNum(totalCases);
+      var enrollmentCase = cases.by_type.find(function(c) { return c.type === 'Enrollment Delay'; });
+      document.getElementById('kpi-ops-enrollment-pct').textContent = enrollmentCase ? enrollmentCase.pct.toFixed(0) + '%' : '—';
+
+      // Cases Monthly Trend
+      var casesMonthly = cases.monthly_volume.slice().reverse();
+      charts.casesMonthly = new Chart(document.getElementById('chart-cases-monthly'), {
+        type: 'bar',
+        data: {
+          labels: casesMonthly.map(function(d) { return d.month; }),
+          datasets: [{
+            label: 'New Cases',
+            data: casesMonthly.map(function(d) { return d.new_cases; }),
+            backgroundColor: '#E53E3E',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: { label: function(ctx) { return '  ' + fmtNum(ctx.parsed.y) + ' cases opened'; } }
+            })
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { font: BFSM } },
+            y: { grid: gc(), ticks: { font: BFSM, callback: function(v) { return fmtNum(v); } } }
+          }
+        }
+      });
+
+      // Refunds by Amount (top 12)
+      var byAmt = refunds.slice().sort(function(a, b) { return b.total_amount - a.total_amount; }).slice(0, 12);
+      charts.opsRefundAmt = new Chart(document.getElementById('chart-ops-refund-amt'), {
+        type: 'bar',
+        data: {
+          labels: byAmt.map(function(d) { return d.refund_reason; }),
+          datasets: [{
+            label: 'Refund Amount',
+            data: byAmt.map(function(d) { return d.total_amount; }),
+            backgroundColor: '#043886',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: {
+                label: function(ctx) {
+                  var d = byAmt[ctx.dataIndex];
+                  return ['  Total: ' + fmtCurrency(ctx.parsed.x), '  Count: ' + fmtNum(d.count), '  Avg: ' + fmtCurrency(d.avg_amount)];
+                }
+              }
+            })
+          },
+          scales: {
+            x: { grid: gc(), ticks: { font: BFSM, callback: function(v) { return fmtCurrency(v); } } },
+            y: { grid: { display: false }, ticks: { font: BFSM } }
+          }
+        }
+      });
+
+      // Refunds by Count (top 12)
+      var byCnt = refunds.slice().sort(function(a, b) { return b.count - a.count; }).slice(0, 12);
+      charts.opsRefundCnt = new Chart(document.getElementById('chart-ops-refund-cnt'), {
+        type: 'bar',
+        data: {
+          labels: byCnt.map(function(d) { return d.refund_reason; }),
+          datasets: [{
+            label: 'Refund Count',
+            data: byCnt.map(function(d) { return d.count; }),
+            backgroundColor: '#169ee3',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: {
+                label: function(ctx) {
+                  var d = byCnt[ctx.dataIndex];
+                  return ['  Count: ' + fmtNum(ctx.parsed.x), '  Total: ' + fmtCurrency(d.total_amount), '  Avg: ' + fmtCurrency(d.avg_amount)];
+                }
+              }
+            })
+          },
+          scales: {
+            x: { grid: gc(), ticks: { font: BFSM, callback: function(v) { return fmtNum(v); } } },
+            y: { grid: { display: false }, ticks: { font: BFSM } }
+          }
+        }
+      });
+
+      // Payment Event Stage Horizontal Bar
+      var evtOrder = ['requested','confirmed','received','sent','cleared','completed','initiated','stop_requested','return_to_sender','purchase'];
+      var evtFiltered = events.filter(function(e) { return evtOrder.indexOf(e.event_name) > -1; })
+        .sort(function(a, b) { return evtOrder.indexOf(a.event_name) - evtOrder.indexOf(b.event_name); });
+      var evtColors = { 'completed': '#00C48C', 'cleared': '#00C48C', 'return_to_sender': '#E53E3E', 'stop_requested': '#F59E0B' };
+      charts.eventStages = new Chart(document.getElementById('chart-event-stages'), {
+        type: 'bar',
+        data: {
+          labels: evtFiltered.map(function(e) { return e.event_name.replace(/_/g, ' '); }),
+          datasets: [{
+            label: 'Event Count',
+            data: evtFiltered.map(function(e) { return e.count; }),
+            backgroundColor: evtFiltered.map(function(e) { return evtColors[e.event_name] || '#043886'; }),
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: Object.assign({}, tt(), {
+              callbacks: { label: function(ctx) { return '  ' + fmtNum(ctx.parsed.y) + ' events'; } }
+            })
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { font: BFSM } },
+            y: { grid: gc(), ticks: { font: BFSM, callback: function(v) { return fmtNum(v); } } }
+          }
+        }
+      });
+    }
+
     // ── Bootstrap ────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', function() {
-      var ts = new Date('2026-03-24T20:12:58Z');
+      var ts = new Date('2026-04-01T12:01:43Z');
       document.getElementById('last-updated').textContent =
         'Last updated: ' +
         ts.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) +
